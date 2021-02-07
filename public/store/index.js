@@ -18,6 +18,7 @@ export default createStore({
             videoPlayer: {
                 state: Constants.STATE_EMPTY,
                 error: null,
+                id: null,
                 url: null,
             },
             position: {
@@ -93,6 +94,7 @@ export default createStore({
             state.videoPlayer = {
                 state: Constants.STATE_EMPTY,
                 error: null,
+                id: null,
                 url: null,
             };
             state.position = {
@@ -104,6 +106,7 @@ export default createStore({
             state.videoPlayer = {
                 state: Constants.STATE_LOADING,
                 error: null,
+                id: null,
                 url: null,
             };
             state.position = {
@@ -115,6 +118,7 @@ export default createStore({
             state.videoPlayer = {
                 state: Constants.STATE_ERROR,
                 error: message,
+                id: null,
                 url: null,
             };
             state.position = {
@@ -122,11 +126,12 @@ export default createStore({
                 end: null,
             };
         },
-        [Constants.MUTATION_VP_PRESENT] (state, url) {
+        [Constants.MUTATION_VP_PRESENT] (state, payload) {
             state.videoPlayer = {
                 state: Constants.STATE_PRESENT,
                 error: null,
-                url: url,
+                id: payload.id,
+                url: payload.url,
             };
             state.position = {
                 start: null,

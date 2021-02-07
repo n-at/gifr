@@ -85,7 +85,11 @@
 
         methods: {
             exportFile() {
-                //TODO
+                const videoFileId = this.$store.state.videoPlayer.id;
+                const timeStart = this.$store.state.position.start;
+                const timeEnd = this.$store.state.position.end;
+
+                window.open(`/export?id=${videoFileId}&start=${timeStart}&end=${timeEnd}&framerate=${this.framerate}&size=${this.size}` );
             },
         },
     };

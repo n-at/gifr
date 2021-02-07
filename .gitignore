@@ -9,3 +9,4 @@
 /src/main/resources/public/build
 /node_modules/
 *.http
+/export/

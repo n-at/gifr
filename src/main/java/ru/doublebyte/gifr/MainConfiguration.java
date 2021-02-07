@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.doublebyte.gifr.components.*;
-import ru.doublebyte.gifr.configuration.FileSystemNavigatorConfiguration;
-import ru.doublebyte.gifr.configuration.GlobalAudioEncodingParams;
-import ru.doublebyte.gifr.configuration.GlobalVideoEncodingParams;
-import ru.doublebyte.gifr.configuration.SegmentParams;
+import ru.doublebyte.gifr.configuration.*;
 
 @Configuration
 @EnableScheduling
@@ -36,6 +33,12 @@ public class MainConfiguration {
     @ConfigurationProperties(prefix = "segment-params")
     public SegmentParams segmentParams() {
         return new SegmentParams();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "export-params")
+    public ExportParams exportParams() {
+        return new ExportParams();
     }
 
     @Bean
@@ -72,6 +75,11 @@ public class MainConfiguration {
     @Bean
     public DashEncoding dashEncoding() {
         return new DashEncoding(mediaEncoder(), mediaInfo(), fileManipulation());
+    }
+
+    @Bean
+    public GifExporter gifExporter() {
+        return new GifExporter(timeoutCommandlineExecutor(), exportParams());
     }
 
 }

@@ -45,7 +45,8 @@ public class VideoController {
 
             dashEncoding.open(videoFileInfo);
 
-            return VideoResponse.success(String.format("/video/dash/%s.mpd", videoFileInfo.getChecksum()));
+            var url = String.format("/video/dash/%s.mpd", videoFileInfo.getChecksum());
+            return VideoResponse.success(url, videoFileInfo.getChecksum());
         } catch (Exception e) {
             logger.error("open video error " + path, e);
             return Response.error(e.getMessage());

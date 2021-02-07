@@ -74,7 +74,10 @@ export default {
                 return;
             }
 
-            Store.commit(Constants.MUTATION_VP_PRESENT, response.url);
+            Store.commit(Constants.MUTATION_VP_PRESENT, {
+                id: response.id,
+                url: response.url,
+            });
         });
     },
 };
