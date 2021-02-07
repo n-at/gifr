@@ -1,22 +1,14 @@
 <template>
-  <div class="alert alert-info">
-    <Second></Second>
-    {{ message }}
-  </div>
+  <FileSystemNavigator></FileSystemNavigator>
 </template>
 
 <script>
-  import Second from './Second.vue';
+  import FileSystemNavigator from "./navigator/FileSystemNavigator.vue";
 
   export default {
-    data() {
-      return {
-        message: 'hello, world!!',
-      }
-    },
     components: {
-      Second,
-    }
+        FileSystemNavigator,
+    },
   };
 </script>
 

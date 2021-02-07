@@ -1,0 +1,11 @@
+export default {
+    STATE_LOADING: 'loading',
+    STATE_PRESENT: 'present',
+    STATE_ERROR: 'error',
+    STATE_EMPTY: 'empty',
+
+    MUTATION_FSN_EMPTY: 'fileSystemNavigatorEmpty',
+    MUTATION_FSN_LOADING: 'fileSystemNavigatorLoading',
+    MUTATION_FSN_ERROR: 'fileSystemNavigatorError',
+    MUTATION_FSN_PRESENT: 'fileSystemNavigatorPresent',
+};
