@@ -16,10 +16,12 @@ public class MediaInfo {
 
     private final TimeoutCommandlineExecutor timeoutCommandlineExecutor;
     private final Cache<String, VideoFileInfo> videoFileInfoCache;
+    private final Cache<String, VideoFileInfo> videoFileInfoByIdCache;
 
     public MediaInfo(TimeoutCommandlineExecutor timeoutCommandlineExecutor) {
         this.timeoutCommandlineExecutor = timeoutCommandlineExecutor;
         this.videoFileInfoCache = Caffeine.newBuilder().build();
+        this.videoFileInfoByIdCache = Caffeine.newBuilder().build();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -31,14 +33,23 @@ public class MediaInfo {
      * @return Info
      */
     public VideoFileInfo videoFileInfo(String videoFilePath) {
-        return videoFileInfoCache.get(videoFilePath, path -> {
+        var videoFileInfo = videoFileInfoCache.getIfPresent(videoFilePath);
+
+        if (videoFileInfo == null) {
             try {
-                return videoFileInfoImpl(path);
+                videoFileInfo = videoFileInfoImpl(videoFilePath);
+                videoFileInfoCache.put(videoFilePath, videoFileInfo);
+                videoFileInfoByIdCache.put(videoFileInfo.getChecksum(), videoFileInfo);
             } catch (Exception e) {
                 logger.error("video file info error " + videoFilePath, e);
-                return null;
             }
-        });
+        }
+
+        return videoFileInfo;
+    }
+
+    public VideoFileInfo getByVideoFileId(String videoFileId) {
+        return videoFileInfoByIdCache.getIfPresent(videoFileId);
     }
 
     private VideoFileInfo videoFileInfoImpl(String videoFilePath) {

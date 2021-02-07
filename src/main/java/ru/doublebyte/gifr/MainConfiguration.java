@@ -3,18 +3,39 @@ package ru.doublebyte.gifr;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.doublebyte.gifr.components.FileSystemNavigator;
-import ru.doublebyte.gifr.components.MediaInfo;
-import ru.doublebyte.gifr.components.TimeoutCommandlineExecutor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import ru.doublebyte.gifr.components.*;
 import ru.doublebyte.gifr.configuration.FileSystemNavigatorConfiguration;
+import ru.doublebyte.gifr.configuration.GlobalAudioEncodingParams;
+import ru.doublebyte.gifr.configuration.GlobalVideoEncodingParams;
+import ru.doublebyte.gifr.configuration.SegmentParams;
 
 @Configuration
+@EnableScheduling
 public class MainConfiguration {
 
     @Bean
     @ConfigurationProperties(prefix = "file-system-navigator")
     public FileSystemNavigatorConfiguration fileSystemNavigatorConfiguration() {
         return new FileSystemNavigatorConfiguration();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "global-video-encoding-params")
+    public GlobalVideoEncodingParams globalVideoEncodingParams() {
+        return new GlobalVideoEncodingParams();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "global-audio-encoding-params")
+    public GlobalAudioEncodingParams globalAudioEncodingParams() {
+        return new GlobalAudioEncodingParams();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "segment-params")
+    public SegmentParams segmentParams() {
+        return new SegmentParams();
     }
 
     @Bean
@@ -30,6 +51,27 @@ public class MainConfiguration {
     @Bean
     public MediaInfo mediaInfo() {
         return new MediaInfo(timeoutCommandlineExecutor());
+    }
+
+    @Bean
+    public FileManipulation fileManipulation() {
+        return new FileManipulation(segmentParams());
+    }
+
+    @Bean
+    public MediaEncoder mediaEncoder() {
+        return new MediaEncoder(
+                timeoutCommandlineExecutor(),
+                globalVideoEncodingParams(),
+                globalAudioEncodingParams(),
+                segmentParams(),
+                fileManipulation()
+        );
+    }
+
+    @Bean
+    public DashEncoding dashEncoding() {
+        return new DashEncoding(mediaEncoder(), mediaInfo(), fileManipulation());
     }
 
 }

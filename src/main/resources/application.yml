@@ -1,2 +1,25 @@
+server.address: "127.0.0.1"
+
 file-system-navigator:
   default-start-directory: ""
+
+global-video-encoding-params:
+  codec: "libx264"
+  profile: "main"
+  preset: "veryfast"
+  framerate: 25
+  keyframes: 200
+  pixel-format: "yuv420p"
+
+global-audio-encoding-params:
+  codec: "aac"
+  bitrate: "192k"
+  channels: 2
+  sample-rate: 44100
+
+segment-params:
+  dash-file-name: "dash.mpd"
+  dash-output-path: "dash"
+  chunk-output-path: "chunks"
+  duration: 10
+  lifetime: 120
