@@ -13,4 +13,9 @@ export default {
     MUTATION_VFI_LOADING: 'videoFileInfoLoading',
     MUTATION_VFI_ERROR: 'videoFileInfoError',
     MUTATION_VFI_PRESENT: 'videoFileInfoPresent',
+
+    MUTATION_VP_EMPTY: 'videoPlayerEmpty',
+    MUTATION_VP_LOADING: 'videoPlayerLoading',
+    MUTATION_VP_ERROR: 'videoPlayerError',
+    MUTATION_VP_PRESENT: 'videoPlayerPresent',
 };

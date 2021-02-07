@@ -38,9 +38,10 @@
 </template>
 
 <script>
-    import Constants from "../store/constants";
-    import LoadingState from "../common/LoadingState.vue";
-    import ErrorState from "../common/ErrorState.vue";
+    import Constants from "../store/constants"
+    import LoadingState from "../common/LoadingState.vue"
+    import ErrorState from "../common/ErrorState.vue"
+    import Api from '../store/api'
 
     export default {
         components: {
@@ -88,7 +89,7 @@
 
         methods: {
             open() {
-                //TODO open video file in player
+                Api.openVideoFile(this.$store.state.videoFileInfo.data.path);
             },
         }
     };

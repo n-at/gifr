@@ -24,6 +24,9 @@
     "bootstrap": "^4.6.0",
     "jquery": "^3.5.1",
     "popper.js": "^1.16.1",
+    "video.js": "^7.11.4",
+    "videojs-contrib-quality-levels": "^2.0.9",
+    "videojs-hls-quality-selector": "^1.1.4",
     "vue": "^3.0.5",
     "vuex": "^4.0.0"
   },

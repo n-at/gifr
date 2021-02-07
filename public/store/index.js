@@ -15,6 +15,11 @@ export default createStore({
                 error: null,
                 data: null,
             },
+            videoPlayer: {
+                state: Constants.STATE_EMPTY,
+                error: null,
+                url: null,
+            },
         }
     },
 
@@ -76,6 +81,36 @@ export default createStore({
                 state: Constants.STATE_ERROR,
                 error: message,
                 data: null,
+            };
+        },
+
+        //VideoPlayer
+        [Constants.MUTATION_VP_EMPTY] (state) {
+            state.videoPlayer = {
+                state: Constants.STATE_EMPTY,
+                error: null,
+                url: null,
+            };
+        },
+        [Constants.MUTATION_VP_LOADING] (state) {
+            state.videoPlayer = {
+                state: Constants.STATE_LOADING,
+                error: null,
+                url: null,
+            };
+        },
+        [Constants.MUTATION_VP_ERROR] (state, message) {
+            state.videoPlayer = {
+                state: Constants.STATE_ERROR,
+                error: message,
+                url: null,
+            };
+        },
+        [Constants.MUTATION_VP_PRESENT] (state, url) {
+            state.videoPlayer = {
+                state: Constants.STATE_PRESENT,
+                error: null,
+                url: url,
             };
         },
     },
