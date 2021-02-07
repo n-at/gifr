@@ -18,4 +18,7 @@ export default {
     MUTATION_VP_LOADING: 'videoPlayerLoading',
     MUTATION_VP_ERROR: 'videoPlayerError',
     MUTATION_VP_PRESENT: 'videoPlayerPresent',
+
+    MUTATION_POSITION_START: 'positionStart',
+    MUTATION_POSITION_END: 'positionEnd',
 };

@@ -42,6 +42,7 @@
     import LoadingState from "../common/LoadingState.vue"
     import ErrorState from "../common/ErrorState.vue"
     import Api from '../store/api'
+    import TimeUtils from '../utils/time'
 
     export default {
         components: {
@@ -72,17 +73,11 @@
                     return {};
                 }
 
-                const intSeconds = Math.trunc(info.duration);
-                const minutes = Math.trunc(intSeconds / 60);
-                const hours = Math.trunc(intSeconds / 3600);
-                const frac = info.duration - intSeconds;
-                const seconds = intSeconds % 60 + Math.round(frac * 1000) / 1000;
-
                 return {
                     path: info.path,
                     checksum: info.checksum,
                     resolution: `${info.width}x${info.height}`,
-                    duration: `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`,
+                    duration: TimeUtils.formatTime(info.duration),
                 };
             },
         },
