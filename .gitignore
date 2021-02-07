@@ -8,3 +8,4 @@
 /public/build
 /src/main/resources/public/build
 /node_modules/
+*.http
