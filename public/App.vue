@@ -11,7 +11,7 @@
   export default {
     data() {
       return {
-        message: 'hello, world',
+        message: 'hello, world!!',
       }
     },
     components: {

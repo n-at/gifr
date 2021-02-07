@@ -3,12 +3,60 @@ const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
 
 module.exports = (env, argv) => {
     let outputPath = path.resolve(__dirname, 'public', 'build');
+    let optimization = {};
+
     if (argv.mode === 'production') {
         outputPath = path.resolve(__dirname, 'src', 'main', 'resources', 'public', 'build');
+        optimization = {
+            minimize: true,
+            minimizer: [
+                '...',
+                new CssMinimizerPlugin(),
+            ],
+        };
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    const VueRule = {
+        test: /\.vue$/,
+        use: 'vue-loader',
+    };
+    const JsRule = {
+        test: /\.js$/,
+        exclude: /(node_modules)/,
+        use: [
+            'babel-loader',
+            'eslint-loader',
+        ],
+    };
+    const CssRule = {
+        test: /\.css$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                    publicPath: '/build/',
+                },
+            },
+            'css-loader',
+        ],
+    };
+    const ImagesRule = {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: 'file-loader',
+    };
+    const FontsRule = {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: 'file-loader',
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
 
     return {
         mode: 'development',
@@ -22,22 +70,6 @@ module.exports = (env, argv) => {
             path: outputPath,
         },
 
-        optimization: {
-
-        },
-
-        devtool: 'source-map',
-
-        performance: {
-            hints: false,
-        },
-
-        resolve: {
-            alias: {
-                '@': path.resolve(__dirname, 'public'),
-            },
-        },
-
         plugins: [
             new webpack.ProgressPlugin(),
             new CleanWebpackPlugin(),
@@ -47,39 +79,17 @@ module.exports = (env, argv) => {
 
         module: {
             rules: [
-                {
-                    test: /\.vue$/,
-                    use: 'vue-loader',
-                }, {
-                    test: /\.js$/,
-                    exclude: /(node_modules)/,
-                    use: [
-                        'babel-loader',
-                        'eslint-loader',
-                    ],
-                }, {
-                    test: /\.css$/,
-                    use: [
-                        {
-                            loader: MiniCssExtractPlugin.loader,
-                            options: {
-                                publicPath: '/build/',
-                            },
-                        },
-                        'css-loader',
-                    ],
-                }, {
-                    test: /\.(png|svg|jpg|gif)$/,
-                    use: [
-                        'file-loader',
-                    ],
-                }, {
-                    test: /\.(woff|woff2|eot|ttf|otf)$/,
-                    use: [
-                        'file-loader',
-                    ],
-                },
+                VueRule,
+                JsRule,
+                CssRule,
+                ImagesRule,
+                FontsRule,
             ],
         },
+
+        devtool: 'source-map',
+        optimization: optimization,
+        performance: { hints: false },
+        resolve: {},
     };
 };
