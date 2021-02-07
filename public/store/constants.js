@@ -8,4 +8,9 @@ export default {
     MUTATION_FSN_LOADING: 'fileSystemNavigatorLoading',
     MUTATION_FSN_ERROR: 'fileSystemNavigatorError',
     MUTATION_FSN_PRESENT: 'fileSystemNavigatorPresent',
+
+    MUTATION_VFI_EMPTY: 'videoFileInfoEmpty',
+    MUTATION_VFI_LOADING: 'videoFileInfoLoading',
+    MUTATION_VFI_ERROR: 'videoFileInfoError',
+    MUTATION_VFI_PRESENT: 'videoFileInfoPresent',
 };

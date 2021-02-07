@@ -31,4 +31,27 @@ export default {
             });
         });
     },
+
+    /**
+     * Request info about video file
+     *
+     * @param path
+     */
+    videoFileInfo(path) {
+        Store.commit(Constants.MUTATION_VFI_LOADING);
+
+        $.post('/video-info', {path: path}, response => {
+            if (!response) {
+                Store.commit(Constants.MUTATION_VFI_ERROR, 'Video file info request failed');
+                return;
+            }
+
+            if (!response.success) {
+                Store.commit(Constants.MUTATION_VFI_ERROR, response.message);
+                return;
+            }
+
+            Store.commit(Constants.MUTATION_VFI_PRESENT, response.info);
+        });
+    },
 };

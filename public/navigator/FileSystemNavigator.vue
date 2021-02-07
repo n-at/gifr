@@ -1,13 +1,13 @@
 <template>
 
     <template v-if="isEmpty">
-        <EmptyState :message="'File list not yet loaded'"></EmptyState>
+        <EmptyState :message="'File list not yet loaded'"/>
     </template>
     <template v-else-if="isLoading">
-        <LoadingState></LoadingState>
+        <LoadingState/>
     </template>
     <template v-else-if="isError">
-        <ErrorState :message="errorMessage"></ErrorState>
+        <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
         <div class="file-system-navigator card">
@@ -88,7 +88,7 @@
                 if (entry.type === 'Directory') {
                     Api.loadFileList(entry.fullPath);
                 } else if (entry.type === 'File') {
-                    //TODO load file info
+                    Api.videoFileInfo(entry.fullPath);
                 }
             },
         },
