@@ -1,0 +1,9 @@
+/.idea/
+/*.iml
+/target/
+/application.yml
+/*.mp4
+/dash/
+/chunks/
+/public/build
+/src/main/resources/public/build
