@@ -20,14 +20,6 @@
                 <i class="fa fa-fast-forward"></i>
             </button>
         </div>
-        <div class="mt-1">
-            <div>
-                <em>Start:</em> {{ timeStart }}
-            </div>
-            <div>
-                <em>End:</em> {{ timeEnd }}
-            </div>
-        </div>
     </div>
 </template>
 
@@ -36,7 +28,6 @@
     import 'videojs-contrib-quality-levels'
     import 'videojs-hls-quality-selector'
     import Constants from '../store/constants'
-    import TimeUtils from '../utils/time'
 
     export default {
         props: ['url'],
@@ -64,24 +55,6 @@
             if (this.player) {
                 this.player.dispose();
             }
-        },
-
-        computed: {
-            timeStart() {
-                if (this.$store.state.position.start !== null) {
-                    return TimeUtils.formatTime(this.$store.state.position.start);
-                } else {
-                    return 'not defined';
-                }
-            },
-
-            timeEnd() {
-                if (this.$store.state.position.end !== null) {
-                    return TimeUtils.formatTime(this.$store.state.position.end);
-                } else {
-                    return 'not defined';
-                }
-            },
         },
 
         methods: {
