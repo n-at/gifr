@@ -14,14 +14,48 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-10">
-                        <div>
-                            <em>Path:</em> {{ fileInfo.path }}
+                        <div class="text-primary">
+                            <i class="fa fa-play"></i> {{ fileInfo.path }}
                         </div>
                         <div>
-                            <em>Size:</em> {{ fileInfo.resolution }}
+                            <i class="fa fa-clock" title="Length"></i> {{ fileInfo.duration }}
                         </div>
-                        <div>
-                            <em>Length:</em> {{ fileInfo.duration }}
+                        <div class="row">
+                            <div class="col-6">
+                                <div><strong>Video</strong></div>
+                                <div class="row">
+                                    <div class="col-4">Codec:</div>
+                                    <div class="col-8">{{ fileInfo.video.codec }}</div>
+
+                                    <div class="col-4">Resolution:</div>
+                                    <div class="col-8">{{ fileInfo.video.width }}x{{ fileInfo.video.height }}</div>
+
+                                    <div class="col-4">Frame rate:</div>
+                                    <div class="col-8">{{ fileInfo.video.framerate }}</div>
+
+                                    <div class="col-4">Bitrate:</div>
+                                    <div class="col-8">{{ fileInfo.video.bitrate / 1000 }} kbit/s</div>
+
+                                    <div class="col-4">Pixel format:</div>
+                                    <div class="col-8">{{ fileInfo.video.pixelFormat }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div><strong>Audio</strong></div>
+                                <div class="row">
+                                    <div class="col-4">Codec:</div>
+                                    <div class="col-8">{{ fileInfo.audio.codec }}</div>
+
+                                    <div class="col-4">Channels:</div>
+                                    <div class="col-8">{{ fileInfo.audio.channels }}</div>
+
+                                    <div class="col-4">Sample rate:</div>
+                                    <div class="col-8">{{ fileInfo.audio.sampleRate }} Hz</div>
+
+                                    <div class="col-4">Bitrate:</div>
+                                    <div class="col-8">{{ fileInfo.audio.bitrate / 1000 }} kbit/s</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-2 text-right">
@@ -76,8 +110,9 @@
                 return {
                     path: info.path,
                     checksum: info.checksum,
-                    resolution: `${info.width}x${info.height}`,
                     duration: TimeUtils.formatTime(info.duration),
+                    video: info.video,
+                    audio: info.audio,
                 };
             },
         },

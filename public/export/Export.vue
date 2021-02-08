@@ -1,5 +1,5 @@
 <template>
-    <div v-if="timeVisible" class="card mt-3 mb-3">
+    <div v-if="timeVisible" class="card mb-3">
         <div class="card-body">
             <div>
                 <em>Start:</em> {{ timeStart }}

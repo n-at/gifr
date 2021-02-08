@@ -1,7 +1,7 @@
 <template>
     <div class="mt-3">
         <video ref="videoPlayer" class="video-js"></video>
-        <div class="mt-3 text-center">
+        <div class="mt-3 mb-3 text-center">
             <button type="button" class="btn btn-sm btn-outline-secondary" title="Previous frame"
                     @click="previousFrame">
                 <i class="fa fa-backward"></i>

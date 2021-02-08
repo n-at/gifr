@@ -66,6 +66,9 @@ public class MediaInfo {
         }
 
         var audioStreamInfo = getAudioStreamInfo(videoFilePath);
+        if (audioStreamInfo == null) {
+            throw new IllegalStateException("no audio stream found");
+        }
 
         var videoFileInfo = new VideoFileInfo();
         videoFileInfo.setPath(videoFilePath);
