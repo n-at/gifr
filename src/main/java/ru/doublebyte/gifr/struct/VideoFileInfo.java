@@ -5,8 +5,8 @@ public class VideoFileInfo {
     private String path;
     private String checksum;
     private double duration;
-    private int width;
-    private int height;
+    private VideoStreamInfo video;
+    private AudioStreamInfo audio;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -54,19 +54,19 @@ public class VideoFileInfo {
         this.duration = duration;
     }
 
-    public int getWidth() {
-        return width;
+    public VideoStreamInfo getVideo() {
+        return video;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void setVideo(VideoStreamInfo video) {
+        this.video = video;
     }
 
-    public int getHeight() {
-        return height;
+    public AudioStreamInfo getAudio() {
+        return audio;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void setAudio(AudioStreamInfo audio) {
+        this.audio = audio;
     }
 }
