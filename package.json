@@ -2,7 +2,7 @@
   "name": "gifr",
   "version": "1.0.0",
   "description": "gifr - gif recorder",
-  "main": "index.js",
+  "main": "public/index.js",
   "scripts": {
     "build": "webpack --mode=\"production\"",
     "build-dev": "webpack --mode=\"development\"",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/n-at/gifr.git"
+    "url": "git+https://github.com/n-at/gifr.git"
   },
   "author": "Alexey Nurgaliev",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://gitlab.com/n-at/gifr/issues"
+    "url": "https://github.com/n-at/gifr/issues"
   },
-  "homepage": "https://gitlab.com/n-at/gifr#readme",
+  "homepage": "https://github.com/n-at/gifr#readme",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
     "bootstrap": "^4.6.0",
