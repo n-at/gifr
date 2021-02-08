@@ -1,6 +1,6 @@
 <template>
     <div class="mt-3">
-        <video ref="videoPlayer" class="video-js" width="640" height="480"></video>
+        <video ref="videoPlayer" class="video-js"></video>
         <div class="mt-3 text-center">
             <button type="button" class="btn btn-sm btn-outline-secondary" title="Previous frame"
                     @click="previousFrame">
@@ -43,6 +43,7 @@
                 controls: true,
                 autoplay: false,
                 preload: 'auto',
+                fluid: true,
                 sources: [{
                     src: this.$props.url,
                     type: 'application/dash+xml',
