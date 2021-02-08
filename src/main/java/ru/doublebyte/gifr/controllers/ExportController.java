@@ -10,6 +10,7 @@ import ru.doublebyte.gifr.components.GifExporter;
 import ru.doublebyte.gifr.components.MediaInfo;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
 
 @RestController
 public class ExportController {
@@ -51,6 +52,9 @@ public class ExportController {
             if (videoFileInfo == null) {
                 throw new IllegalStateException("Video file info not found");
             }
+
+            var filename = String.format(Locale.US, "%s-%f-%f.gif", videoFileInfo.getChecksum(), positionStart, positionEnd);
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
             var stream = gifExporter.export(videoFileInfo, positionStart, positionEnd, framerate, size);
             StreamUtils.copy(stream, response.getOutputStream());

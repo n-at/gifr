@@ -1,11 +1,15 @@
 <template>
     <div v-if="timeVisible" class="card mb-3">
         <div class="card-body">
-            <div>
-                <em>Start:</em> {{ timeStart }}
+            <div class="text-primary">
+                <i class="fa fa-download"></i> gif settings
             </div>
-            <div>
-                <em>End:</em> {{ timeEnd }}
+            <div class="row">
+                <div class="col-2">Start:</div>
+                <div class="col-10">{{ timeStart }}</div>
+
+                <div class="col-2">End:</div>
+                <div class="col-10">{{ timeEnd }}</div>
             </div>
 
             <div v-if="exportVisible">
@@ -36,7 +40,7 @@
                 <div>
                     <button type="button" class="btn btn-outline-primary"
                             @click="exportFile">
-                        <i class="fa fa-download"></i> Export gif
+                        <i class="fa fa-download"></i> Save gif
                     </button>
                 </div>
             </div>
