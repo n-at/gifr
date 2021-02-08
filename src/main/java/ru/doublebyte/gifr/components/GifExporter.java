@@ -37,12 +37,16 @@ public class GifExporter {
     public InputStream export(VideoFileInfo videoFileInfo, double start, double end, int framerate, int size) {
         ensureOutputDirectoryExists();
 
+        var videoFilePath = videoFileInfo.getPath();
+        videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+        videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
         var outputPath = Paths.get(exportParams.getPath(), UUID.randomUUID().toString() + ".gif");
 
         final var commandline = "ffmpeg -hide_banner -y" + " " +
                 String.format(Locale.US, "-ss %f", start) + " " +
                 String.format(Locale.US, "-to %f", end) + " " +
-                String.format("-i \"%s\"", videoFileInfo.getPath()) + " " +
+                String.format("-i \"%s\"", videoFilePath) + " " +
                 String.format("-vf \"fps=%d,scale=-1:%d:flags=lanczos\"", framerate, size) + " " +
                 outputPath.toAbsolutePath().toString();
 

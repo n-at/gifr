@@ -80,6 +80,9 @@ public class MediaInfo {
 
     protected VideoStreamInfo getVideoStreamInfo(String videoFilePath) {
         try {
+            videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+            videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
             var command = "ffprobe -v error -select_streams v:0" + " " +
                     "-show_entries stream=codec_long_name,width,height,pix_fmt,r_frame_rate,bit_rate,duration" + " " +
                     "-of default=noprint_wrappers=1:nokey=0" + " " +
@@ -141,6 +144,9 @@ public class MediaInfo {
 
     protected AudioStreamInfo getAudioStreamInfo(String videoFilePath) {
         try {
+            videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+            videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
             var command = "ffprobe -v error -select_streams a:0" + " " +
                     "-show_entries stream=codec_long_name,sample_rate,channels,bit_rate,duration" + " " +
                     "-of default=noprint_wrappers=1:nokey=0" + " " +

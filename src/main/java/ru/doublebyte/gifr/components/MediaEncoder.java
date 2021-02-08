@@ -45,7 +45,11 @@ public class MediaEncoder {
     public void generateDashInit(VideoFileInfo videoFileInfo) {
         final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
 
-        final var commandline = String.format("ffmpeg -hide_banner -y -ss 0 -t 1 -i \"%s\"", videoFileInfo.getPath()) + " " +
+        var videoFilePath = videoFileInfo.getPath();
+        videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+        videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
+        final var commandline = String.format("ffmpeg -hide_banner -y -ss 0 -t 1 -i \"%s\"", videoFilePath) + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
                 "-map 0:a" + " " +
@@ -94,6 +98,10 @@ public class MediaEncoder {
         var chunkFilePath = fileManipulation.getChunkFilePath(videoFileInfo.getChecksum(), streamId, chunkId);
         var chunkIdNumber = Integer.parseInt(chunkId);
 
+        var videoFilePath = videoFileInfo.getPath();
+        videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+        videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
         var segmentDuration = segmentParams.getDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration + 0.023222; //magical constant
         var timeEnd = chunkIdNumber * segmentDuration;
@@ -103,7 +111,7 @@ public class MediaEncoder {
         var commandline = "ffmpeg -hide_banner -y" + " " +
                 String.format(Locale.US, "-ss %f", timeStart) + " " +
                 String.format("-to %d", timeEnd) + " " +
-                String.format("-i \"%s\"", videoFileInfo.getPath()) + " " +
+                String.format("-i \"%s\"", videoFilePath) + " " +
                 "-copyts -start_at_zero" + " " +
                 "-vn" + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
@@ -132,6 +140,10 @@ public class MediaEncoder {
         var chunkFilePath = fileManipulation.getChunkFilePath(videoFileInfo.getChecksum(), streamId, chunkId);
         var chunkIdNumber = Integer.parseInt(chunkId);
 
+        var videoFilePath = videoFileInfo.getPath();
+        videoFilePath = videoFilePath.replaceAll("\"", "\\\"");
+        videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
+
         var segmentDuration = segmentParams.getDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration;
         var timeEnd = chunkIdNumber * segmentDuration;
@@ -141,7 +153,7 @@ public class MediaEncoder {
         var commandline = "ffmpeg -hide_banner -y" + " " +
                 String.format("-ss %d", timeStart) + " " +
                 String.format("-to %d", timeEnd) + " " +
-                String.format("-i \"%s\"", videoFileInfo.getPath()) + " " +
+                String.format("-i \"%s\"", videoFilePath) + " " +
                 "-copyts -start_at_zero" + " " +
                 "-an" + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
