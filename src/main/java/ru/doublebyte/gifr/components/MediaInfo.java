@@ -87,7 +87,7 @@ public class MediaInfo {
             videoFilePath = videoFilePath.replaceAll("\n", "\\\n");
 
             var command = "ffprobe -v error -select_streams v:0" + " " +
-                    "-show_entries stream=codec_long_name,width,height,pix_fmt,r_frame_rate,bit_rate,duration" + " " +
+                    "-show_entries format=duration:stream=codec_long_name,width,height,pix_fmt,r_frame_rate,bit_rate" + " " +
                     "-of default=noprint_wrappers=1:nokey=0" + " " +
                     String.format("\"%s\"", videoFilePath);
 
@@ -106,6 +106,9 @@ public class MediaInfo {
                         var parameter = entry.split("=");
                         var name = parameter[0];
                         var value = parameter[1];
+                        if ("N/A".equals(value)) {
+                            return;
+                        }
 
                         switch (name) {
                             case "codec_long_name":
@@ -170,6 +173,9 @@ public class MediaInfo {
                         var parameter = entry.split("=");
                         var name = parameter[0];
                         var value = parameter[1];
+                        if ("N/A".equals(value)) {
+                            return;
+                        }
 
                         switch (name) {
                             case "codec_long_name":

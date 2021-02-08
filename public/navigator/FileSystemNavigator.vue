@@ -13,12 +13,16 @@
         <div class="file-system-navigator card">
             <div class="card-body">
                 <div class="file-system-navigator-path mb-3">
-                    <button type="button" class="btn btn-sm btn-outline-secondary mr-3" title="Go up one level"
+                    <button type="button" class="btn btn-sm btn-outline-primary mr-3" title="Go up one level"
                             @click="gotoPrevious">
                         <i class="fa fa-arrow-circle-up"></i>
                     </button>
                     <span class="text-secondary">
-                        {{ currentPath }}
+                        <button type="button" class="btn btn-sm btn-outline-secondary mr-1"
+                                v-for="entry in currentPathEntries"
+                                @click="goto(entry.path)">
+                            /{{ entry.name }}
+                        </button>
                     </span>
                 </div>
                 <div class="file-system-navigator-list list-group">
@@ -69,6 +73,28 @@
                     return '';
                 }
             },
+            currentPathEntries() {
+                const currentPath = this.currentPath;
+                if (currentPath === '') {
+                    return [];
+                }
+
+                let path = '/';
+                let entries = [];
+
+                currentPath.split('/').forEach(segment => {
+                    if (segment === '' && entries.length !== 0) {
+                        return;
+                    }
+                    path += segment + '/';
+                    entries.push({
+                        name: segment,
+                        path: path,
+                    });
+                });
+
+                return entries;
+            },
             entries() {
                 return this.$store.state.fileSystemNavigator.data.entries;
             },
@@ -83,6 +109,9 @@
                 if (this.$store.state.fileSystemNavigator.data && this.$store.state.fileSystemNavigator.data.previousPath) {
                     Api.loadFileList(this.$store.state.fileSystemNavigator.data.previousPath);
                 }
+            },
+            goto(path) {
+                Api.loadFileList(path);
             },
             open(entry) {
                 if (entry.type === 'Directory') {

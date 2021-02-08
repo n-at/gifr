@@ -52,7 +52,7 @@ public class MediaEncoder {
         final var commandline = String.format("ffmpeg -hide_banner -y -ss 0 -t 1 -i \"%s\"", videoFilePath) + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
-                "-map 0:a" + " " +
+                "-map 0:a:0" + " " +
                 VideoQualityPreset.Video360.toVideoEncodingOptions(0) + " " +
                 VideoQualityPreset.Video540.toVideoEncodingOptions(1) + " " +
                 VideoQualityPreset.Video720.toVideoEncodingOptions(2) + " " +
@@ -112,7 +112,7 @@ public class MediaEncoder {
                 String.format(Locale.US, "-ss %f", timeStart) + " " +
                 String.format("-to %d", timeEnd) + " " +
                 String.format("-i \"%s\"", videoFilePath) + " " +
-                "-copyts -start_at_zero" + " " +
+                "-copyts -start_at_zero -map 0:a:0" + " " +
                 "-vn" + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
                 "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
@@ -154,7 +154,7 @@ public class MediaEncoder {
                 String.format("-ss %d", timeStart) + " " +
                 String.format("-to %d", timeEnd) + " " +
                 String.format("-i \"%s\"", videoFilePath) + " " +
-                "-copyts -start_at_zero" + " " +
+                "-copyts -start_at_zero -map 0:v:0" + " " +
                 "-an" + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
                 String.format("-vf \"scale=-2:%d\"", preset.getSize()) + " " +
