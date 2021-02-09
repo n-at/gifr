@@ -118,10 +118,14 @@
 
         methods: {
             open() {
-                const videoFileId = this.$store.state.videoFileInfo.data.checksum;
-                this.$store.commit(Constants.MUTATION_VP_PRESENT, {
-                    id: videoFileId,
-                    url: `/video/dash/${videoFileId}.mpd`,
+                this.$store.commit(Constants.MUTATION_VP_LOADING);
+
+                setTimeout(() => {
+                    const videoFileId = this.$store.state.videoFileInfo.data.checksum;
+                    this.$store.commit(Constants.MUTATION_VP_PRESENT, {
+                        id: videoFileId,
+                        url: `/video/dash/${videoFileId}.mpd`,
+                    });
                 });
             },
         }
