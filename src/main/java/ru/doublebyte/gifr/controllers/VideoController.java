@@ -5,12 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.doublebyte.gifr.components.DashEncoding;
-import ru.doublebyte.gifr.components.MediaInfo;
-import ru.doublebyte.gifr.struct.response.Response;
-import ru.doublebyte.gifr.struct.response.VideoResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,39 +15,13 @@ public class VideoController {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
 
-    private final MediaInfo mediaInfo;
     private final DashEncoding dashEncoding;
 
-    public VideoController(MediaInfo mediaInfo, DashEncoding dashEncoding) {
-        this.mediaInfo = mediaInfo;
+    public VideoController(DashEncoding dashEncoding) {
         this.dashEncoding = dashEncoding;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Open video file, prepare DASH stream descriptors
-     *
-     * @param path Path to video file
-     * @return ...
-     */
-    @RequestMapping("/video/open")
-    public Response open(@RequestParam("path") String path) {
-        try {
-            var videoFileInfo = mediaInfo.videoFileInfo(path);
-            if (videoFileInfo == null) {
-                throw new IllegalStateException("Video file info error");
-            }
-
-            dashEncoding.open(videoFileInfo);
-
-            var url = String.format("/video/dash/%s.mpd", videoFileInfo.getChecksum());
-            return VideoResponse.success(url, videoFileInfo.getChecksum());
-        } catch (Exception e) {
-            logger.error("open video error " + path, e);
-            return Response.error(e.getMessage());
-        }
-    }
 
     /**
      * Get DASH descriptor file

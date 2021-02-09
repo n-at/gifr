@@ -75,7 +75,6 @@
     import Constants from "../store/constants"
     import LoadingState from "../common/LoadingState.vue"
     import ErrorState from "../common/ErrorState.vue"
-    import Api from '../store/api'
     import TimeUtils from '../utils/time'
 
     export default {
@@ -119,7 +118,11 @@
 
         methods: {
             open() {
-                Api.openVideoFile(this.$store.state.videoFileInfo.data.path);
+                const videoFileId = this.$store.state.videoFileInfo.data.checksum;
+                this.$store.commit(Constants.MUTATION_VP_PRESENT, {
+                    id: videoFileId,
+                    url: `/video/dash/${videoFileId}.mpd`,
+                });
             },
         }
     };

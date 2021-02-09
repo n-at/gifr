@@ -54,30 +54,4 @@ export default {
             Store.commit(Constants.MUTATION_VFI_PRESENT, response.info);
         });
     },
-
-    /**
-     * Open video file and prepare to play
-     *
-     * @param path
-     */
-    openVideoFile(path) {
-        Store.commit(Constants.MUTATION_VP_LOADING);
-
-        $.post('/video/open', {path: path}, response => {
-            if (!response) {
-                Store.commit(Constants.MUTATION_VP_ERROR, 'Failed to open video file');
-                return;
-            }
-
-            if (!response.success) {
-                Store.commit(Constants.MUTATION_VP_ERROR, response.message);
-                return;
-            }
-
-            Store.commit(Constants.MUTATION_VP_PRESENT, {
-                id: response.id,
-                url: response.url,
-            });
-        });
-    },
 };

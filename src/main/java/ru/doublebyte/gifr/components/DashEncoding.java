@@ -2,7 +2,6 @@ package ru.doublebyte.gifr.components;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.doublebyte.gifr.configuration.VideoQualityPreset;
-import ru.doublebyte.gifr.struct.VideoFileInfo;
 
 import java.io.InputStream;
 
@@ -24,11 +23,16 @@ public class DashEncoding {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public void open(VideoFileInfo videoFileInfo) {
-        mediaEncoder.generateDashInit(videoFileInfo);
-    }
-
     public InputStream getDashFileInputStream(String videoFileId) {
+        if (!fileManipulation.dashFileExists(videoFileId)) {
+            var videoFileInfo = mediaInfo.getByVideoFileId(videoFileId);
+            if (videoFileInfo == null) {
+                throw new IllegalStateException("video file info not found");
+            }
+
+            mediaEncoder.generateDashInit(videoFileInfo);
+        }
+
         if (fileManipulation.dashFileExists(videoFileId)) {
             return fileManipulation.getDashFileInputStream(videoFileId);
         } else {
