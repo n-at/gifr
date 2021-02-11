@@ -6,6 +6,7 @@ public class GlobalAudioEncodingParams {
     private String bitrate = "128k";
     private int channels = 2;
     private int sampleRate = 44100;
+    private int encodingTimeout = 5;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -50,5 +51,13 @@ public class GlobalAudioEncodingParams {
 
     public void setSampleRate(int sampleRate) {
         this.sampleRate = sampleRate;
+    }
+
+    public int getEncodingTimeout() {
+        return encodingTimeout;
+    }
+
+    public void setEncodingTimeout(int encodingTimeout) {
+        this.encodingTimeout = encodingTimeout;
     }
 }

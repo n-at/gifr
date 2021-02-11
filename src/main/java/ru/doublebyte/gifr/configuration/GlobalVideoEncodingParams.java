@@ -8,6 +8,7 @@ public class GlobalVideoEncodingParams {
     private int keyframes = 200;
     private String codec = "libx264";
     private String pixelFormat = "yuv420p";
+    private int encodingTimeout = 5;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -68,5 +69,13 @@ public class GlobalVideoEncodingParams {
 
     public void setPixelFormat(String pixelFormat) {
         this.pixelFormat = pixelFormat;
+    }
+
+    public int getEncodingTimeout() {
+        return encodingTimeout;
+    }
+
+    public void setEncodingTimeout(int encodingTimeout) {
+        this.encodingTimeout = encodingTimeout;
     }
 }

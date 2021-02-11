@@ -119,7 +119,7 @@ public class MediaEncoder {
                 chunkFilePath.toString();
 
         try {
-            timeoutCommandlineExecutor.execute(commandline);
+            timeoutCommandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
@@ -165,7 +165,7 @@ public class MediaEncoder {
                 chunkFilePath.toString();
 
         try {
-            timeoutCommandlineExecutor.execute(commandline);
+            timeoutCommandlineExecutor.execute(commandline, globalVideoEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
             logger.warn(String.format("video segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);

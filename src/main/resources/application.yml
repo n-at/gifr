@@ -10,12 +10,14 @@ global-video-encoding-params:
   framerate: 25
   keyframes: 200
   pixel-format: "yuv420p"
+  encoding-timeout: 5
 
 global-audio-encoding-params:
   codec: "aac"
   bitrate: "192k"
   channels: 2
   sample-rate: 44100
+  encoding-timeout: 5
 
 segment-params:
   dash-file-name: "dash.mpd"
