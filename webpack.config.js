@@ -15,27 +15,22 @@ module.exports = (env, argv) => {
         outputPath = path.resolve(__dirname, 'src', 'main', 'resources', 'public', 'build');
         optimization = {
             minimize: true,
-            minimizer: [
-                '...',
-                new CssMinimizerPlugin(),
-            ],
+            minimizer: ['...', new CssMinimizerPlugin()],
         };
     }
 
     ///////////////////////////////////////////////////////////////////////////
 
-    const VueRule = {
+    const vueRule = {
         test: /\.vue$/,
         use: 'vue-loader',
     };
-    const JsRule = {
+    const jsRule = {
         test: /\.js$/,
         exclude: /(node_modules)/,
-        use: [
-            'babel-loader',
-        ],
+        use: 'babel-loader',
     };
-    const CssRule = {
+    const cssRule = {
         test: /\.css$/,
         use: [
             {
@@ -47,11 +42,11 @@ module.exports = (env, argv) => {
             'css-loader',
         ],
     };
-    const ImagesRule = {
+    const imagesRule = {
         test: /\.(png|svg|jpg|gif)$/,
         use: 'file-loader',
     };
-    const FontsRule = {
+    const fontsRule = {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: 'file-loader',
     };
@@ -80,11 +75,11 @@ module.exports = (env, argv) => {
 
         module: {
             rules: [
-                VueRule,
-                JsRule,
-                CssRule,
-                ImagesRule,
-                FontsRule,
+                vueRule,
+                jsRule,
+                cssRule,
+                imagesRule,
+                fontsRule,
             ],
         },
 
