@@ -7,7 +7,7 @@ Many formats supported (everything that `ffmpeg` can transcode).
 Building
 --------
 
-JDK 11, nodejs 15, npm 5 required.
+JDK 11, nodejs 15, npm 7 required.
 
     npm install
     npm run build
