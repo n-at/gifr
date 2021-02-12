@@ -4,6 +4,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 
 
 module.exports = (env, argv) => {
@@ -32,7 +33,6 @@ module.exports = (env, argv) => {
         exclude: /(node_modules)/,
         use: [
             'babel-loader',
-            'eslint-loader',
         ],
     };
     const CssRule = {
@@ -75,6 +75,7 @@ module.exports = (env, argv) => {
             new CleanWebpackPlugin(),
             new VueLoaderPlugin(),
             new MiniCssExtractPlugin(),
+            new ESLintWebpackPlugin(),
         ],
 
         module: {
