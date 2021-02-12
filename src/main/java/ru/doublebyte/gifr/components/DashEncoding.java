@@ -1,9 +1,12 @@
 package ru.doublebyte.gifr.components;
 
-import org.springframework.scheduling.annotation.Scheduled;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import ru.doublebyte.gifr.configuration.SegmentParams;
 import ru.doublebyte.gifr.configuration.VideoQualityPreset;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 public class DashEncoding {
 
@@ -11,14 +14,22 @@ public class DashEncoding {
     private final MediaInfo mediaInfo;
     private final FileManipulation fileManipulation;
 
+    private final Cache<String, Boolean> chunkAutoRemoval;
+
     public DashEncoding(
             MediaEncoder mediaEncoder,
             MediaInfo mediaInfo,
-            FileManipulation fileManipulation
+            FileManipulation fileManipulation,
+            SegmentParams segmentParams
     ) {
         this.mediaEncoder = mediaEncoder;
         this.mediaInfo = mediaInfo;
         this.fileManipulation = fileManipulation;
+        this.chunkAutoRemoval = Caffeine.newBuilder()
+                .expireAfterWrite(segmentParams.getLifetime(), TimeUnit.SECONDS)
+                .expireAfterAccess(segmentParams.getLifetime(), TimeUnit.SECONDS)
+                .removalListener((chunkFileName, graph, cause) -> fileManipulation.removeChunkFile((String)chunkFileName))
+                .build();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -49,6 +60,8 @@ public class DashEncoding {
     }
 
     public InputStream getChunkFileInputStream(String videoFileId, String streamId, String chunkId) {
+        chunkAutoRemoval.put(fileManipulation.getChunkFileName(videoFileId, streamId, chunkId), true);
+
         if (!fileManipulation.chunkFileExists(videoFileId, streamId, chunkId)) {
             var videoFileInfo = mediaInfo.getByVideoFileId(videoFileId);
             if (videoFileInfo == null) {
@@ -90,13 +103,6 @@ public class DashEncoding {
         } else {
             throw new IllegalStateException("chunk file not found or not readable");
         }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-
-    @Scheduled(fixedDelayString = "${segment-params.lifetime}")
-    public void removeOldChunks() {
-        fileManipulation.removeOldChunks();
     }
 
 }

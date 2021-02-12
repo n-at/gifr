@@ -7,6 +7,7 @@ public class SegmentParams {
     private String chunkOutputPath = "chunks";
     private int duration = 10;
     private int lifetime = 120;
+    private int encodingTimeout = 5;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -54,5 +55,13 @@ public class SegmentParams {
 
     public void setLifetime(int lifetime) {
         this.lifetime = lifetime;
+    }
+
+    public int getEncodingTimeout() {
+        return encodingTimeout;
+    }
+
+    public void setEncodingTimeout(int encodingTimeout) {
+        this.encodingTimeout = encodingTimeout;
     }
 }

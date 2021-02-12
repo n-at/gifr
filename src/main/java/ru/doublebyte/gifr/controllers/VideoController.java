@@ -39,7 +39,7 @@ public class VideoController {
         ) {
             StreamUtils.copy(inputStream, response.getOutputStream());
         } catch (Exception e) {
-            logger.error("dash error", e);
+            logger.error("dash error id=" + videoFileId, e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
@@ -62,7 +62,7 @@ public class VideoController {
         ) {
             StreamUtils.copy(inputStream, response.getOutputStream());
         } catch (Exception e) {
-            logger.error("dash input error", e);
+            logger.error(String.format("init error id=%s stream=%s", videoFileId, streamId), e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
@@ -87,7 +87,7 @@ public class VideoController {
         ) {
             StreamUtils.copy(inputStream, response.getOutputStream());
         } catch (Exception e) {
-            logger.error("dash error", e);
+            logger.error(String.format("chunk error: id=%s stream=%s chunk=%s", videoFileId, streamId, chunkId), e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }

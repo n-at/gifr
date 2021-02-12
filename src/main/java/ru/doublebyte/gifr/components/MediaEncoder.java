@@ -65,7 +65,7 @@ public class MediaEncoder {
                 "-f dash" + " " +
                 dashFilePath.toString();
 
-        timeoutCommandlineExecutor.execute(commandline);
+        timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
 
         try {
             var dash = Files.readString(dashFilePath);

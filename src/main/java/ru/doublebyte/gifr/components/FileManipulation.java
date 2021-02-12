@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 
 public class FileManipulation {
 
@@ -129,35 +128,13 @@ public class FileManipulation {
         try {
             var path = Paths.get(segmentParams.getChunkOutputPath(), chunkFileName);
             if (Files.exists(path)) {
+                logger.info("remove old chunk: {}", chunkFileName);
                 Files.delete(path);
             } else {
                 logger.warn("chunk does not exist: {}", chunkFileName);
             }
         } catch (Exception e) {
             logger.error("chunk delete error " + chunkFileName, e);
-        }
-    }
-
-    /**
-     * Remove encoded chunks that older than specified lifetime
-     */
-    public void removeOldChunks() {
-        try {
-            final var currentTime = new Date().getTime();
-            final var lifetime = segmentParams.getLifetime() * 1000L;
-
-            Files.walk(Paths.get(segmentParams.getChunkOutputPath()))
-                    .filter(path -> path.getFileName().startsWith("chunk-"))
-                    .filter(path -> Math.abs(path.toFile().lastModified() - currentTime) > lifetime)
-                    .forEach(path -> {
-                        try {
-                            Files.delete(path);
-                        } catch (Exception e) {
-                            logger.error("old chunk delete error: " + path, e);
-                        }
-                    });
-        } catch (Exception e) {
-            logger.error("remove old chunks error", e);
         }
     }
 

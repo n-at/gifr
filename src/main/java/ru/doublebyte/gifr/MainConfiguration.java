@@ -74,7 +74,7 @@ public class MainConfiguration {
 
     @Bean
     public DashEncoding dashEncoding() {
-        return new DashEncoding(mediaEncoder(), mediaInfo(), fileManipulation());
+        return new DashEncoding(mediaEncoder(), mediaInfo(), fileManipulation(), segmentParams());
     }
 
     @Bean

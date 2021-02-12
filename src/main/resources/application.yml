@@ -25,6 +25,7 @@ segment-params:
   chunk-output-path: "chunks"
   duration: 10
   lifetime: 120
+  encoding-timeout: 5
 
 export-params:
   path: "export"
