@@ -38,6 +38,11 @@ module.exports = (env, argv) => {
         "useBuiltIns": "entry",
         "corejs": "3.8",
     };
+    const postcssConfiguration = {
+        plugins: [
+            ["postcss-preset-env"],
+        ],
+    };
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -67,6 +72,12 @@ module.exports = (env, argv) => {
                 },
             },
             'css-loader',
+            {
+                loader: "postcss-loader",
+                options: {
+                    postcssOptions: postcssConfiguration,
+                },
+            },
         ],
     };
     const imagesRule = {
