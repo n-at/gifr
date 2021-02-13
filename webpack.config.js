@@ -21,6 +21,26 @@ module.exports = (env, argv) => {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    const eslintConfiguration = {
+        "env": {
+            "browser": true,
+            "es2020": true,
+        },
+        "parserOptions": {
+            "ecmaVersion": 2020,
+            "sourceType": "module",
+        },
+        "extends": "eslint:recommended",
+        "rules": {},
+    };
+    const babelPresetConfiguration = {
+        "targets": "> 0.25%, not dead",
+        "useBuiltIns": "entry",
+        "corejs": "3.8",
+    };
+
+    ///////////////////////////////////////////////////////////////////////////
+
     const vueRule = {
         test: /\.vue$/,
         use: 'vue-loader',
@@ -28,7 +48,14 @@ module.exports = (env, argv) => {
     const jsRule = {
         test: /\.js$/,
         exclude: /(node_modules)/,
-        use: 'babel-loader',
+        use: {
+            loader: 'babel-loader',
+            options: {
+                presets: [
+                    ['@babel/preset-env', babelPresetConfiguration],
+                ],
+            },
+        },
     };
     const cssRule = {
         test: /\.css$/,
@@ -70,7 +97,7 @@ module.exports = (env, argv) => {
             new CleanWebpackPlugin(),
             new VueLoaderPlugin(),
             new MiniCssExtractPlugin(),
-            new ESLintWebpackPlugin(),
+            new ESLintWebpackPlugin({overrideConfig: eslintConfiguration}),
         ],
 
         module: {

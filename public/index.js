@@ -1,3 +1,6 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 import 'popper.js'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css'

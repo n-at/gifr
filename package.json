@@ -22,8 +22,10 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
     "bootstrap": "^4.6.0",
+    "core-js": "^3.8.3",
     "jquery": "^3.5.1",
     "popper.js": "^1.16.1",
+    "regenerator-runtime": "^0.13.7",
     "video.js": "^7.11.4",
     "videojs-contrib-quality-levels": "^2.0.9",
     "videojs-hls-quality-selector": "^1.1.4",
@@ -44,12 +46,5 @@
     "vue-loader": "^16.1.2",
     "webpack": "^5.21.1",
     "webpack-cli": "^4.5.0"
-  },
-  "eslintConfig": {
-    "parserOptions": {
-      "ecmaVersion": 2017,
-      "sourceType": "module"
-    },
-    "rules": {}
   }
 }
