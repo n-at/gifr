@@ -23,9 +23,12 @@
                         <div class="row">
                             <div class="col-6">
                                 <div><strong>Video</strong></div>
-                                <div class="row">
+                                <div class="row mb-3">
                                     <div class="col-4">Codec:</div>
-                                    <div class="col-8">{{ fileInfo.video.codec }}</div>
+                                    <div class="col-8">{{ fileInfo.video.codecDisplay }}</div>
+
+                                    <div class="col-4">Profile:</div>
+                                    <div class="col-8">{{ fileInfo.video.profile }}</div>
 
                                     <div class="col-4">Resolution:</div>
                                     <div class="col-8">{{ fileInfo.video.width }}x{{ fileInfo.video.height }}</div>
@@ -39,21 +42,35 @@
                                     <div class="col-4">Pixel format:</div>
                                     <div class="col-8">{{ fileInfo.video.pixelFormat }}</div>
                                 </div>
+
+                                <div v-if="fileInfo.subtitles.length">
+                                    <div><strong>Subtitles</strong></div>
+                                    <div v-for="subtitlesInfo in fileInfo.subtitles" class="row mb-3">
+                                        <div class="col-4">Name:</div>
+                                        <div class="col-8">{{ subtitlesInfo.language }}: {{ subtitlesInfo.title }}</div>
+
+                                        <div class="col-4">Format:</div>
+                                        <div class="col-8">{{ subtitlesInfo.codecDisplay }}</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-6">
                                 <div><strong>Audio</strong></div>
-                                <div class="row">
+                                <div v-for="audioInfo in fileInfo.audio" class="row mb-3">
+                                    <div class="col-4">Name:</div>
+                                    <div class="col-8">{{ audioInfo.language }}: {{ audioInfo.title }}</div>
+
                                     <div class="col-4">Codec:</div>
-                                    <div class="col-8">{{ fileInfo.audio.codec }}</div>
+                                    <div class="col-8">{{ audioInfo.codecDisplay }}</div>
 
                                     <div class="col-4">Channels:</div>
-                                    <div class="col-8">{{ fileInfo.audio.channels }}</div>
+                                    <div class="col-8">{{ audioInfo.channels }}</div>
 
                                     <div class="col-4">Sample rate:</div>
-                                    <div class="col-8">{{ fileInfo.audio.sampleRate }} Hz</div>
+                                    <div class="col-8">{{ audioInfo.sampleRate }} Hz</div>
 
                                     <div class="col-4">Bitrate:</div>
-                                    <div class="col-8">{{ fileInfo.audio.bitrate / 1000 }} kbit/s</div>
+                                    <div class="col-8">{{ audioInfo.bitrate / 1000 }} kbit/s</div>
                                 </div>
                             </div>
                         </div>
@@ -112,6 +129,7 @@
                     duration: TimeUtils.formatTime(info.duration),
                     video: info.video,
                     audio: info.audio,
+                    subtitles: info.subtitles,
                 };
             },
         },
