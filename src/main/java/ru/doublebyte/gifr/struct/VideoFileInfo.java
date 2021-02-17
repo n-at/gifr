@@ -5,7 +5,7 @@ public class VideoFileInfo {
     private String path;
     private String checksum;
     private double duration;
-    private VideoStreamInfo video;
+    private VideoStreamInfoLegacy video;
     private AudioStreamInfo audio;
 
     ///////////////////////////////////////////////////////////////////////////
@@ -54,11 +54,11 @@ public class VideoFileInfo {
         this.duration = duration;
     }
 
-    public VideoStreamInfo getVideo() {
+    public VideoStreamInfoLegacy getVideo() {
         return video;
     }
 
-    public void setVideo(VideoStreamInfo video) {
+    public void setVideo(VideoStreamInfoLegacy video) {
         this.video = video;
     }
 

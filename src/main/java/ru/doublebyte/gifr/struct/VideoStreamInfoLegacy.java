@@ -1,6 +1,6 @@
 package ru.doublebyte.gifr.struct;
 
-public class VideoStreamInfo {
+public class VideoStreamInfoLegacy {
 
     private String codec;
     private int width;
@@ -12,7 +12,7 @@ public class VideoStreamInfo {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public VideoStreamInfo() {
+    public VideoStreamInfoLegacy() {
 
     }
 
