@@ -34,9 +34,10 @@ public class VideoFileInfo {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public VideoFileInfo(String path, String checksum, List<StreamInfo> streams) {
+    public VideoFileInfo(String path, String checksum, double duration, List<StreamInfo> streams) {
         this.path = path;
         this.checksum = checksum;
+        this.duration = duration;
 
         videoStream = streams.stream()
                 .filter(StreamInfo::isVideo)
@@ -46,7 +47,6 @@ public class VideoFileInfo {
         if (videoStream == null) {
             throw new IllegalArgumentException("no video stream found");
         }
-        duration = videoStream.getDuration();
 
         audioStreams = streams.stream()
                 .filter(StreamInfo::isAudio)

@@ -45,7 +45,7 @@ public class MediaInfo {
                 if (!Files.exists(Paths.get(videoFilePath))) {
                     throw new IllegalArgumentException("file not found: " + videoFilePath);
                 }
-                videoFileInfo = new VideoFileInfo(videoFilePath, fileChecksum(videoFilePath), getFileMediaStreams(videoFilePath));
+                videoFileInfo = new VideoFileInfo(videoFilePath, fileChecksum(videoFilePath), getFileDuration(videoFilePath), getFileMediaStreams(videoFilePath));
                 videoFileInfoCache.put(videoFilePath, videoFileInfo);
                 videoFileInfoByIdCache.put(videoFileInfo.getChecksum(), videoFileInfo);
             } catch (Exception e) {
@@ -107,6 +107,31 @@ public class MediaInfo {
     }
 
     /**
+     * Get video file duration
+     *
+     * @param videoFilePath ...
+     * @return ...
+     */
+    protected double getFileDuration(String videoFilePath) {
+        try {
+            final var commandline =
+                    "ffprobe -loglevel error -show_entries format=duration" + " " +
+                    "-of default=noprint_wrappers=1:nokey=1" + " " +
+                    String.format("\"%s\"", FileNameUtils.escape(videoFilePath));
+
+            var output = timeoutCommandlineExecutor.execute(commandline);
+            if (output == null || output.isEmpty()) {
+                throw new Exception("duration not found");
+            }
+
+            return ffprobeDouble(output);
+        } catch (Exception e) {
+            logger.error("get duration error " + videoFilePath, e);
+            return 0;
+        }
+    }
+
+    /**
      * Read stream info from output of ffprobe output
      *
      * @param output ffprobe raw output
@@ -117,7 +142,7 @@ public class MediaInfo {
             throw new IllegalArgumentException("empty ffprobe output");
         }
 
-        final var pattern = Pattern.compile("^(a-zA-Z:_-)=(.*)$");
+        final var pattern = Pattern.compile("^([a-zA-Z:_-]+)=(.*)$");
 
         final var streams = new ArrayList<StreamInfo>();
         StreamInfo currentStream = null;
@@ -151,7 +176,7 @@ public class MediaInfo {
                 case "codec_type":
                     currentStream.setType(value);
                     break;
-                case "codec":
+                case "codec_name":
                     currentStream.setCodec(value);
                     break;
                 case "codec_long_name":

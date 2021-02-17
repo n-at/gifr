@@ -121,7 +121,7 @@
                 this.$store.commit(Constants.MUTATION_VP_LOADING);
 
                 setTimeout(() => {
-                    const videoFileId = this.$store.state.videoFileInfo.data.checksum;
+                    const videoFileId = this.$store.state.videoFileInfo.data.id;
                     this.$store.commit(Constants.MUTATION_VP_PRESENT, {
                         id: videoFileId,
                         url: `/video/dash/${videoFileId}.mpd`,

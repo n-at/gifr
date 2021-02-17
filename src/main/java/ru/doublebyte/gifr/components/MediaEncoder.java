@@ -71,7 +71,7 @@ public class MediaEncoder {
                 String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
-                String.join(" ", streams) +
+                String.join(" ", streams) + " " +
                 String.format("-init_seg_name \"init-%s-\\$RepresentationID\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
                 String.format("-media_seg_name \"chunk-%s-\\$RepresentationID\\$-\\$Number%%05d\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
                 "-dash_segment_type mp4 -use_template 1 -use_timeline 0" + " " +
@@ -79,6 +79,8 @@ public class MediaEncoder {
                 String.format("-adaptation_sets \"%s\"", adaptationSets) + " " +
                 "-f dash" + " " +
                 dashFilePath.toString();
+
+        System.out.println(commandline);
 
         timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
 

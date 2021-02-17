@@ -68,19 +68,11 @@ public class DashEncoding {
                 throw new IllegalStateException("video file info not found");
             }
 
-            switch (streamId) {
-                case "0":
-                    mediaEncoder.generateAudioSegment(videoFileInfo, streamId, chunkId);
-                    break;
-                case "1":
-                case "2":
-                case "3":
-                case "4":
-                case "5":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, chunkId);
-                    break;
-                default:
-                    throw new IllegalArgumentException("illegal stream id");
+            var streamIdx = Integer.parseInt(streamId);
+            if (streamIdx < videoFileInfo.getAudioStreams().size()) {
+                mediaEncoder.generateAudioSegment(videoFileInfo, streamId, chunkId);
+            } else {
+                mediaEncoder.generateVideoSegment(videoFileInfo, streamId, chunkId);
             }
         }
 
