@@ -1,17 +1,60 @@
 package ru.doublebyte.gifr.struct;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.doublebyte.gifr.struct.mediainfo.AudioStreamInfo;
+import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
+import ru.doublebyte.gifr.struct.mediainfo.SubtitlesStreamInfo;
+import ru.doublebyte.gifr.struct.mediainfo.VideoStreamInfo;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class VideoFileInfo {
 
-    private String path;
-    private String checksum;
-    private double duration;
-    private VideoStreamInfoLegacy video;
-    private AudioStreamInfo audio;
+    @JsonProperty("path")
+    private final String path;
+
+    @JsonProperty("id")
+    private final String checksum;
+
+    @JsonProperty("duration")
+    private final double duration;
+
+    @JsonProperty("video")
+    private final VideoStreamInfo videoStream;
+
+    @JsonProperty("audio")
+    private final List<AudioStreamInfo> audioStreams;
+
+    @JsonProperty("subtitles")
+    private final List<SubtitlesStreamInfo> subtitlesStreams;
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public VideoFileInfo() {
+    public VideoFileInfo(String path, String checksum, List<StreamInfo> streams) {
+        this.path = path;
+        this.checksum = checksum;
 
+        videoStream = streams.stream()
+                .filter(StreamInfo::isVideo)
+                .sorted()
+                .findFirst()
+                .orElse(null);
+        if (videoStream == null) {
+            throw new IllegalArgumentException("no video stream found");
+        }
+        duration = videoStream.getDuration();
+
+        audioStreams = streams.stream()
+                .filter(StreamInfo::isAudio)
+                .sorted()
+                .collect(Collectors.toUnmodifiableList());
+
+        subtitlesStreams = streams.stream()
+                .filter(StreamInfo::isSubtitles)
+                .sorted()
+                .collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -19,6 +62,7 @@ public class VideoFileInfo {
      *
      * @return Formatted duration
      */
+    @JsonIgnore
     public String getMpdDuration() {
         var totalSeconds = (int) duration;
         var milliseconds = (int) ((duration - totalSeconds) * 1000.0);
@@ -34,39 +78,23 @@ public class VideoFileInfo {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getChecksum() {
         return checksum;
-    }
-
-    public void setChecksum(String checksum) {
-        this.checksum = checksum;
     }
 
     public double getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
-        this.duration = duration;
+    public VideoStreamInfo getVideoStream() {
+        return videoStream;
     }
 
-    public VideoStreamInfoLegacy getVideo() {
-        return video;
+    public List<AudioStreamInfo> getAudioStreams() {
+        return audioStreams;
     }
 
-    public void setVideo(VideoStreamInfoLegacy video) {
-        this.video = video;
-    }
-
-    public AudioStreamInfo getAudio() {
-        return audio;
-    }
-
-    public void setAudio(AudioStreamInfo audio) {
-        this.audio = audio;
+    public List<SubtitlesStreamInfo> getSubtitlesStreams() {
+        return subtitlesStreams;
     }
 }

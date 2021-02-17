@@ -1,6 +1,6 @@
 package ru.doublebyte.gifr.struct.mediainfo;
 
-public class StreamInfo implements VideoStreamInfo, AudioStreamInfo, SubtitlesStreamInfo {
+public class StreamInfo implements VideoStreamInfo, AudioStreamInfo, SubtitlesStreamInfo, Comparable<StreamInfo> {
 
     private Integer index;
     private String type; //codec_type
@@ -26,6 +26,14 @@ public class StreamInfo implements VideoStreamInfo, AudioStreamInfo, SubtitlesSt
 
     public StreamInfo() {
 
+    }
+
+    @Override
+    public int compareTo(StreamInfo other) {
+        if (defaultStream == other.defaultStream) {
+            return Integer.compare(index, other.index);
+        }
+        return defaultStream ? -1 : 1;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -195,4 +203,5 @@ public class StreamInfo implements VideoStreamInfo, AudioStreamInfo, SubtitlesSt
     public void setPixelFormat(String pixelFormat) {
         this.pixelFormat = pixelFormat;
     }
+
 }

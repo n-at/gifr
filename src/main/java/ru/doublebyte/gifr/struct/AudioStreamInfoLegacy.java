@@ -1,6 +1,6 @@
 package ru.doublebyte.gifr.struct;
 
-public class AudioStreamInfo {
+public class AudioStreamInfoLegacy {
 
     private String codec;
     private int sampleRate;
@@ -10,7 +10,7 @@ public class AudioStreamInfo {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public AudioStreamInfo() {
+    public AudioStreamInfoLegacy() {
 
     }
 
