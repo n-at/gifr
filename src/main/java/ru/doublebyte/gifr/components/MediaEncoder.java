@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -81,10 +80,10 @@ public class MediaEncoder {
             //fix audio track names
             for (var audioStreamIdx = 0; audioStreamIdx < videoFileInfo.getAudioStreams().size(); audioStreamIdx++) {
                 var audioStream = videoFileInfo.getAudioStreams().get(audioStreamIdx);
-                var language = Matcher.quoteReplacement(String.format("%d:%s:%s", audioStreamIdx+1, audioStream.getLanguage(), audioStream.getTitle()));
+                var language = String.format("%d:%s:%s", audioStreamIdx+1, audioStream.getLanguage(), audioStream.getTitle()).replaceAll("\"", "");
                 dash = dash.replaceAll(
                         String.format("(<AdaptationSet id=\"%d\".*lang=\")(.*)(\")", audioStreamIdx),
-                        String.format("$1%s$3", language)
+                        String.format("$1%s$3", Matcher.quoteReplacement(language))
                 );
             }
 
