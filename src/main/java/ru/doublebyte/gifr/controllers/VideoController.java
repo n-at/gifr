@@ -68,6 +68,29 @@ public class VideoController {
     }
 
     /**
+     * Get subtitles file
+     *
+     * @param videoFileId ...
+     * @param streamId ...
+     * @param response ...
+     */
+    @RequestMapping(path = "/video/subtitles/{id}-{stream}.vtt", produces = "application/octet-stream")
+    public void streamSubtitles(
+        @PathVariable("id") String videoFileId,
+        @PathVariable("stream") String streamId,
+        HttpServletResponse response
+    ) {
+        try (
+                var inputStream = dashEncoding.getSubtitlesFileInputStream(videoFileId, streamId)
+        ) {
+            StreamUtils.copy(inputStream, response.getOutputStream());
+        } catch (Exception e) {
+            logger.error(String.format("subtitles error id=%s stream=%s", videoFileId, streamId), e);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    /**
      * Get DASH stream chunk
      *
      * @param videoFileId ...

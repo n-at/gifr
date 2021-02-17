@@ -3,10 +3,6 @@ package ru.doublebyte.gifr.struct.mediainfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.doublebyte.gifr.configuration.VideoQualityPreset;
-import ru.doublebyte.gifr.struct.mediainfo.AudioStreamInfo;
-import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
-import ru.doublebyte.gifr.struct.mediainfo.SubtitlesStreamInfo;
-import ru.doublebyte.gifr.struct.mediainfo.VideoStreamInfo;
 
 import java.util.Arrays;
 import java.util.List;
@@ -88,6 +84,24 @@ public class VideoFileInfo {
         try {
             var streamIndex = Integer.parseInt(streamId);
             return audioStreams.get(streamIndex);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Subtitles stream in source video file by DASH stream id
+     *
+     * @param streamId ...
+     * @return ...
+     */
+    public SubtitlesStreamInfo getSubtitlesStreamByDashStreamId(String streamId) {
+        if (subtitlesStreams.isEmpty()) {
+            throw new IllegalArgumentException("subtitles streams list is empty");
+        }
+        try {
+            var streamIndex = Integer.parseInt(streamId);
+            return subtitlesStreams.get(streamIndex);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

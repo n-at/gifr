@@ -96,6 +96,31 @@ public class FileManipulation {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    public String getSubtitlesFileName(String videoFileId, String streamId) {
+        return String.format("subtitles-%s-%s.vtt", videoFileId, streamId);
+    }
+
+    public Path getSubtitlesFilePath(String videoFileId, String streamId) {
+        return Paths.get(segmentParams.getDashOutputPath(), getSubtitlesFileName(videoFileId, streamId));
+    }
+
+    public boolean subtitlesFileExists(String videoFileId, String streamId) {
+        return Files.exists(getSubtitlesFilePath(videoFileId, streamId));
+    }
+
+    public InputStream getSubtitlesFileInputStream(String videoFileId, String streamId) {
+        if (!subtitlesFileExists(videoFileId, streamId)) {
+            throw new IllegalArgumentException("subtitles file does not exist");
+        }
+        try {
+            return Files.newInputStream(getSubtitlesFilePath(videoFileId, streamId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
     public String getChunkFileName(String videoFileId, String streamId, String chunkId) {
         return String.format("chunk-%s-%s-%s.m4s", videoFileId, streamId, chunkId);
     }

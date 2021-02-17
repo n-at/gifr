@@ -3,7 +3,6 @@ package ru.doublebyte.gifr.components;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import ru.doublebyte.gifr.configuration.SegmentParams;
-import ru.doublebyte.gifr.configuration.VideoQualityPreset;
 
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +55,23 @@ public class DashEncoding {
             return fileManipulation.getInitFileInputStream(videoFileId, streamId);
         } else {
             throw new IllegalStateException("init file not found or not readable");
+        }
+    }
+
+    public InputStream getSubtitlesFileInputStream(String videoFileId, String streamId) {
+        if (!fileManipulation.subtitlesFileExists(videoFileId, streamId)) {
+            var videoFileInfo = mediaInfo.getByVideoFileId(videoFileId);
+            if (videoFileInfo == null) {
+                throw new IllegalStateException("video file info not found");
+            }
+
+            mediaEncoder.generateSubtitles(videoFileInfo, streamId);
+        }
+
+        if (fileManipulation.subtitlesFileExists(videoFileId, streamId)) {
+            return fileManipulation.getSubtitlesFileInputStream(videoFileId, streamId);
+        } else {
+            throw new IllegalStateException("subtitles file not found or not readable");
         }
     }
 

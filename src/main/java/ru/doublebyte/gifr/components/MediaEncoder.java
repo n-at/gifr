@@ -186,4 +186,34 @@ public class MediaEncoder {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Generate subtitles file
+     *
+     * @param videoFileInfo Video file info
+     * @param streamId Subtitles track index
+     */
+    public void generateSubtitles(VideoFileInfo videoFileInfo, String streamId) {
+        var filePath = fileManipulation.getSubtitlesFilePath(videoFileInfo.getChecksum(), streamId);
+
+        logger.info("generating subtitles {} #{}", videoFileInfo.getChecksum(), streamId);
+
+        try {
+            var stream = videoFileInfo.getSubtitlesStreamByDashStreamId(streamId);
+
+            var commandline =
+                    "ffmpeg -hide_banner -y" + " " +
+                    String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
+                    String.format("-map 0:%d", stream.getIndex()) + " " +
+                    "-c:s webvtt" + " " +
+                    String.format("\"%s\"", FileNameUtils.escape(filePath.toString()));
+
+            timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
+        } catch (Exception e) {
+            logger.warn(String.format("subtitles encoding error %s %s", videoFileInfo.getPath(), streamId));
+            throw new RuntimeException(e);
+        }
+    }
+
 }
