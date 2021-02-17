@@ -1,6 +1,6 @@
 package ru.doublebyte.gifr.struct.response;
 
-import ru.doublebyte.gifr.struct.VideoFileInfo;
+import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 public class VideoInfoResponse extends Response {
 

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.doublebyte.gifr.configuration.GlobalAudioEncodingParams;
 import ru.doublebyte.gifr.configuration.GlobalVideoEncodingParams;
 import ru.doublebyte.gifr.configuration.SegmentParams;
-import ru.doublebyte.gifr.struct.VideoFileInfo;
+import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 import ru.doublebyte.gifr.utils.FileNameUtils;
 
 import java.nio.file.Files;

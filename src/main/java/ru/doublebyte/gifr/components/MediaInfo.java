@@ -5,7 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
-import ru.doublebyte.gifr.struct.VideoFileInfo;
+import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
 import ru.doublebyte.gifr.utils.FileNameUtils;
 

@@ -1,7 +1,7 @@
 package ru.doublebyte.gifr.components;
 
 import ru.doublebyte.gifr.configuration.ExportParams;
-import ru.doublebyte.gifr.struct.VideoFileInfo;
+import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 import java.io.InputStream;
 import java.nio.file.Files;
