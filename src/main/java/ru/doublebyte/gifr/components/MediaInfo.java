@@ -9,6 +9,7 @@ import ru.doublebyte.gifr.struct.AudioStreamInfo;
 import ru.doublebyte.gifr.struct.VideoFileInfo;
 import ru.doublebyte.gifr.struct.VideoStreamInfoLegacy;
 import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
+import ru.doublebyte.gifr.utils.FileNameUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -224,6 +225,32 @@ public class MediaInfo {
     }
 
     ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Get file media streams
+     *
+     * @param videoFilePath ...
+     * @return ...
+     */
+    protected List<StreamInfo> getFileMediaStreams(String videoFilePath) {
+        try {
+            final var commandline =
+                    "ffprobe -loglevel error" + " " +
+                    "-show_entries stream" + " " +
+                    "-of default=noprint_wrappers=1:nokey=0" + " " +
+                    String.format("\"%s\"", FileNameUtils.escape(videoFilePath));
+
+            var output = timeoutCommandlineExecutor.execute(commandline);
+            if (output == null || output.isEmpty()) {
+                return null;
+            }
+
+            return fromFFProbeOutput(output);
+        } catch (Exception e) {
+            logger.error("file media streams error " + videoFilePath, e);
+            return null;
+        }
+    }
 
     /**
      * Read stream info from output of ffprobe output
