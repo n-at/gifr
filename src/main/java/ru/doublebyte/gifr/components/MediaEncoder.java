@@ -11,6 +11,8 @@ import ru.doublebyte.gifr.utils.FileNameUtils;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -67,10 +69,25 @@ public class MediaEncoder {
 
         try {
             var dash = Files.readString(dashFilePath);
+
+            //fix duration and buffer time
             dash = dash.replaceAll("mediaPresentationDuration=\".+\"", String.format("mediaPresentationDuration=\"%s\"", videoFileInfo.getMpdDuration()));
             dash = dash.replaceAll("minBufferTime=\".+\"", String.format("minBufferTime=\"PT%d.0S\"", segmentParams.getDuration() * 2));
+
+            //fix path to init and chunk files
             dash = dash.replaceAll("init-", "/video/init/");
             dash = dash.replaceAll("chunk-", "/video/chunk/");
+
+            //fix audio track names
+            for (var audioStreamIdx = 0; audioStreamIdx < videoFileInfo.getAudioStreams().size(); audioStreamIdx++) {
+                var audioStream = videoFileInfo.getAudioStreams().get(audioStreamIdx);
+                var language = Matcher.quoteReplacement(String.format("%d:%s:%s", audioStreamIdx+1, audioStream.getLanguage(), audioStream.getTitle()));
+                dash = dash.replaceAll(
+                        String.format("(<AdaptationSet id=\"%d\".*lang=\")(.*)(\")", audioStreamIdx),
+                        String.format("$1%s$3", language)
+                );
+            }
+
             Files.writeString(dashFilePath, dash);
         } catch (Exception e) {
             logger.error("mpd fix error", e);
