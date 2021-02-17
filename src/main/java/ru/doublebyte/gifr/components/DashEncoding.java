@@ -72,27 +72,13 @@ public class DashEncoding {
                 case "0":
                     mediaEncoder.generateAudioSegment(videoFileInfo, streamId, chunkId);
                     break;
-
                 case "1":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, VideoQualityPreset.Video360, chunkId);
-                    break;
-
                 case "2":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, VideoQualityPreset.Video430, chunkId);
-                    break;
-
                 case "3":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, VideoQualityPreset.Video540, chunkId);
-                    break;
-
                 case "4":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, VideoQualityPreset.Video720, chunkId);
-                    break;
-
                 case "5":
-                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, VideoQualityPreset.Video1080, chunkId);
+                    mediaEncoder.generateVideoSegment(videoFileInfo, streamId, chunkId);
                     break;
-
                 default:
                     throw new IllegalArgumentException("illegal stream id");
             }

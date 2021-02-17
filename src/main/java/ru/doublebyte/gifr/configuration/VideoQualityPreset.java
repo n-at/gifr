@@ -22,9 +22,9 @@ public enum VideoQualityPreset {
         this.bufsize = bufsize;
     }
 
-    public String toVideoEncodingOptions(int index) {
-        return String.format("-map v:0 -filter:v:%d \"scale=-2:%d\" -b:v:%d %dk -maxrate:%d %dk -bufsize:%d %dk",
-                index, size, index, bitrate, index, maxrate, index, bufsize);
+    public String toVideoEncodingOptions(int streamIdx, int presetIdx) {
+        return String.format("-map 0:%d -filter:v:%d \"scale=-2:%d\" -b:v:%d %dk -maxrate:%d %dk -bufsize:%d %dk",
+                streamIdx, presetIdx, size, presetIdx, bitrate, presetIdx, maxrate, presetIdx, bufsize);
     }
 
     public int getSize() {

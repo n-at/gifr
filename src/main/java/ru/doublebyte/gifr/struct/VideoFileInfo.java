@@ -2,11 +2,13 @@ package ru.doublebyte.gifr.struct;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.doublebyte.gifr.configuration.VideoQualityPreset;
 import ru.doublebyte.gifr.struct.mediainfo.AudioStreamInfo;
 import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
 import ru.doublebyte.gifr.struct.mediainfo.SubtitlesStreamInfo;
 import ru.doublebyte.gifr.struct.mediainfo.VideoStreamInfo;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +72,55 @@ public class VideoFileInfo {
         var minutes = (totalSeconds / 60) % 60;
         var seconds = totalSeconds % 60;
         return String.format("PT%dH%02dM%02d.%03dS", hours, minutes, seconds, milliseconds);
+    }
+
+    /**
+     * Audio stream in source video file by DASH stream id
+     * (first N streams in DASH are audio streams)
+     *
+     * @param streamId ...
+     * @return ...
+     */
+    public AudioStreamInfo getAudioStreamByDashStreamId(String streamId) {
+        if (audioStreams.isEmpty()) {
+            throw new IllegalArgumentException("audio streams list is empty");
+        }
+        try {
+            var streamIndex = Integer.parseInt(streamId);
+            return audioStreams.get(streamIndex);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get video quality preset by DASH stream id
+     * (video streams in DASH are after audio streams)
+     *
+     * @param streamId ...
+     * @return ...
+     */
+    public VideoQualityPreset getVideoQualityPresetByDashStreamId(String streamId) {
+        try {
+            var presetIndex = Integer.parseInt(streamId) - audioStreams.size();
+            return getAvailableVideoQualityPresets().get(presetIndex);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Video quality presets available for this video file (bounded by video height)
+     *
+     * @return ...
+     */
+    @JsonIgnore
+    public List<VideoQualityPreset> getAvailableVideoQualityPresets() {
+        final var videoStream = getVideoStream();
+
+        return Arrays.stream(VideoQualityPreset.values())
+                .filter(preset -> preset.getSize() <= videoStream.getHeight())
+                .collect(Collectors.toUnmodifiableList());
     }
 
     ///////////////////////////////////////////////////////////////////////////
