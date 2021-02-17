@@ -30,7 +30,7 @@
     import Constants from '../store/constants'
 
     export default {
-        props: ['url'],
+        props: ['sources', 'tracks'],
 
         data() {
             return {
@@ -44,10 +44,8 @@
                 autoplay: false,
                 preload: 'auto',
                 fluid: true,
-                sources: [{
-                    src: this.$props.url,
-                    type: 'application/dash+xml',
-                }],
+                sources: this.sources,
+                tracks: this.tracks,
             });
             this.player.hlsQualitySelector();
         },

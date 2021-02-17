@@ -124,7 +124,7 @@
                     const videoFileId = this.$store.state.videoFileInfo.data.id;
                     this.$store.commit(Constants.MUTATION_VP_PRESENT, {
                         id: videoFileId,
-                        url: `/video/dash/${videoFileId}.mpd`,
+                        subtitles: this.$store.state.videoFileInfo.data.subtitles,
                     });
                 });
             },

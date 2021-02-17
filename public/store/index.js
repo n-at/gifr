@@ -19,7 +19,7 @@ export default createStore({
                 state: Constants.STATE_EMPTY,
                 error: null,
                 id: null,
-                url: null,
+                subtitles: [],
             },
             position: {
                 start: null,
@@ -95,7 +95,7 @@ export default createStore({
                 state: Constants.STATE_EMPTY,
                 error: null,
                 id: null,
-                url: null,
+                subtitles: [],
             };
             state.position = {
                 start: null,
@@ -107,7 +107,7 @@ export default createStore({
                 state: Constants.STATE_LOADING,
                 error: null,
                 id: null,
-                url: null,
+                subtitles: [],
             };
             state.position = {
                 start: null,
@@ -119,7 +119,7 @@ export default createStore({
                 state: Constants.STATE_ERROR,
                 error: message,
                 id: null,
-                url: null,
+                subtitles: [],
             };
             state.position = {
                 start: null,
@@ -131,7 +131,7 @@ export default createStore({
                 state: Constants.STATE_PRESENT,
                 error: null,
                 id: payload.id,
-                url: payload.url,
+                subtitles: payload.subtitles,
             };
             state.position = {
                 start: null,

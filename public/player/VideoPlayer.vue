@@ -7,7 +7,7 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <VideoJS :url="url"/>
+        <VideoJS :sources="sources" :tracks="tracks"/>
     </template>
 </template>
 
@@ -37,8 +37,29 @@
             errorMessage() {
                 return this.$store.state.videoPlayer.error;
             },
-            url() {
-                return this.$store.state.videoPlayer.url;
+            sources() {
+                const videoFileId = this.$store.state.videoPlayer.id;
+                return [{
+                    src: `/video/dash/${videoFileId}.mpd`,
+                    type: 'application/dash+xml',
+                }];
+            },
+            tracks() {
+                const subtitles = this.$store.state.videoPlayer.subtitles;
+                if (!subtitles || !subtitles.length) {
+                    return [];
+                }
+
+                const videoFileId = this.$store.state.videoPlayer.id;
+
+                return subtitles.map((subtitles, idx) => {
+                    return {
+                        src: `/video/subtitles/${videoFileId}-${idx}.vtt`,
+                        kind: 'subtitles',
+                        srclang: subtitles.language,
+                        label: `${subtitles.language}: ${subtitles.title}`,
+                    }
+                });
             },
         },
     };
