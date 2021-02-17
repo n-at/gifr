@@ -9,6 +9,7 @@ import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 import ru.doublebyte.gifr.utils.FileNameUtils;
 
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -47,40 +48,20 @@ public class MediaEncoder {
     public void generateDashInit(VideoFileInfo videoFileInfo) {
         final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
 
-        final var streams = videoFileInfo.getAudioStreams()
-                .stream()
-                .map(stream -> String.format("-map 0:%d", stream.getIndex()))
-                .collect(Collectors.toList());
-
-        final var videoStreamIdx = videoFileInfo.getVideoStream().getIndex();
-        final var videoPresets = videoFileInfo.getAvailableVideoQualityPresets();
-        for (var presetIdx = 0; presetIdx < videoPresets.size(); presetIdx++) {
-            var preset = videoPresets.get(presetIdx);
-            streams.add(preset.toVideoEncodingOptions(videoStreamIdx, presetIdx));
-        }
-
-        final var audioStreamsCount = videoFileInfo.getAudioStreams().size();
-        final var audioAdaptationSets = IntStream.range(0, audioStreamsCount)
-                .mapToObj(streamIdx -> String.format("id=%d,streams=%d", streamIdx, streamIdx))
-                .collect(Collectors.joining(" "));
-        final var adaptationSets = String.format("%s id=%d,streams=v", audioAdaptationSets, audioStreamsCount);
-
         final var commandline =
                 "ffmpeg -hide_banner -y" + " " +
                 "-ss 0 -t 1" + " " +
                 String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
                 globalVideoEncodingParams.toEncoderOptions() + " " +
                 globalAudioEncodingParams.toEncoderOptions() + " " +
-                String.join(" ", streams) + " " +
+                String.join(" ", getDashStreams(videoFileInfo)) + " " +
                 String.format("-init_seg_name \"init-%s-\\$RepresentationID\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
                 String.format("-media_seg_name \"chunk-%s-\\$RepresentationID\\$-\\$Number%%05d\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
                 "-dash_segment_type mp4 -use_template 1 -use_timeline 0" + " " +
                 String.format("-seg_duration %d", segmentParams.getDuration()) + " " +
-                String.format("-adaptation_sets \"%s\"", adaptationSets) + " " +
+                String.format("-adaptation_sets \"%s\"", getDashAdaptationSets(videoFileInfo)) + " " +
                 "-f dash" + " " +
-                dashFilePath.toString();
-
-        System.out.println(commandline);
+                String.format("\"%s\"", FileNameUtils.escape(dashFilePath.toString()));
 
         timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
 
@@ -101,6 +82,44 @@ public class MediaEncoder {
         } catch (Exception e) {
             logger.error("chunks remove error", e);
         }
+    }
+
+    /**
+     * List streams in DASH file.
+     * First, all audio streams
+     * Second, video streams by quality presets
+     *
+     * @param videoFileInfo ...
+     * @return ...
+     */
+    private List<String> getDashStreams(VideoFileInfo videoFileInfo) {
+        final var streams = videoFileInfo.getAudioStreams()
+                .stream()
+                .map(stream -> String.format("-map 0:%d", stream.getIndex()))
+                .collect(Collectors.toList());
+
+        final var videoStreamIdx = videoFileInfo.getVideoStream().getIndex();
+        final var videoPresets = videoFileInfo.getAvailableVideoQualityPresets();
+        for (var presetIdx = 0; presetIdx < videoPresets.size(); presetIdx++) {
+            var preset = videoPresets.get(presetIdx);
+            streams.add(preset.toVideoEncodingOptions(videoStreamIdx, presetIdx));
+        }
+
+        return streams;
+    }
+
+    /**
+     * Adaptation sets definition: every audio stream in it's own adaptation set and one set for all video streams
+     *
+     * @param videoFileInfo ...
+     * @return ...
+     */
+    private String getDashAdaptationSets(VideoFileInfo videoFileInfo) {
+        final var audioStreamsCount = videoFileInfo.getAudioStreams().size();
+        final var audioAdaptationSets = IntStream.range(0, audioStreamsCount)
+                .mapToObj(streamIdx -> String.format("id=%d,streams=%d", streamIdx, streamIdx))
+                .collect(Collectors.joining(" "));
+        return String.format("%s id=%d,streams=v", audioAdaptationSets, audioStreamsCount);
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -133,7 +152,7 @@ public class MediaEncoder {
                     String.format("-map 0:%d", stream.getIndex()) + " " +
                     globalAudioEncodingParams.toEncoderOptions() + " " +
                     "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
-                    chunkFilePath.toString();
+                    String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
 
             timeoutCommandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
@@ -177,7 +196,7 @@ public class MediaEncoder {
                     String.format("-maxrate %dk", qualityPreset.getMaxrate()) + " " +
                     String.format("-bufsize %dk", qualityPreset.getBufsize()) + " " +
                     "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
-                    chunkFilePath.toString();
+                    String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
 
             timeoutCommandlineExecutor.execute(commandline, globalVideoEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
