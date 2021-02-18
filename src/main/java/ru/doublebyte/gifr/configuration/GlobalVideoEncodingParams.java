@@ -9,6 +9,7 @@ public class GlobalVideoEncodingParams {
     private String codec = "libx264";
     private String pixelFormat = "yuv420p";
     private int encodingTimeout = 5;
+    private int concurrentJobs = 2;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -77,5 +78,13 @@ public class GlobalVideoEncodingParams {
 
     public void setEncodingTimeout(int encodingTimeout) {
         this.encodingTimeout = encodingTimeout;
+    }
+
+    public int getConcurrentJobs() {
+        return concurrentJobs;
+    }
+
+    public void setConcurrentJobs(int concurrentJobs) {
+        this.concurrentJobs = concurrentJobs;
     }
 }

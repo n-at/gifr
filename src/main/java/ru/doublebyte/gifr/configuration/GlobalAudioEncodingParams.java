@@ -7,6 +7,7 @@ public class GlobalAudioEncodingParams {
     private int channels = 2;
     private int sampleRate = 44100;
     private int encodingTimeout = 5;
+    private int concurrentJobs = 2;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -59,5 +60,13 @@ public class GlobalAudioEncodingParams {
 
     public void setEncodingTimeout(int encodingTimeout) {
         this.encodingTimeout = encodingTimeout;
+    }
+
+    public int getConcurrentJobs() {
+        return concurrentJobs;
+    }
+
+    public void setConcurrentJobs(int concurrentJobs) {
+        this.concurrentJobs = concurrentJobs;
     }
 }

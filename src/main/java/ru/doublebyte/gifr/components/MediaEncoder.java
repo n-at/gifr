@@ -11,6 +11,7 @@ import ru.doublebyte.gifr.utils.FileNameUtils;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,6 +26,9 @@ public class MediaEncoder {
     private final SegmentParams segmentParams;
     private final FileManipulation fileManipulation;
 
+    private final Semaphore videoTranscodingLimiter;
+    private final Semaphore audioTranscodingLimiter;
+
     public MediaEncoder(
             TimeoutCommandlineExecutor timeoutCommandlineExecutor,
             GlobalVideoEncodingParams globalVideoEncodingParams,
@@ -37,6 +41,8 @@ public class MediaEncoder {
         this.globalAudioEncodingParams = globalAudioEncodingParams;
         this.segmentParams = segmentParams;
         this.fileManipulation = fileManipulation;
+        this.videoTranscodingLimiter = new Semaphore(globalVideoEncodingParams.getConcurrentJobs());
+        this.audioTranscodingLimiter = new Semaphore(globalAudioEncodingParams.getConcurrentJobs());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -158,6 +164,8 @@ public class MediaEncoder {
         logger.info("generating audio {} #{}, chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
         try {
+            audioTranscodingLimiter.acquire();
+
             var stream = videoFileInfo.getAudioStreamByDashStreamId(streamId);
 
             var commandline = "ffmpeg -hide_banner -y" + " " +
@@ -174,6 +182,8 @@ public class MediaEncoder {
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
+        } finally {
+            audioTranscodingLimiter.release();
         }
     }
 
@@ -197,6 +207,8 @@ public class MediaEncoder {
         logger.info("generating video {} #{} chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
         try {
+            videoTranscodingLimiter.acquire();
+
             var stream = videoFileInfo.getVideoStream();
             var qualityPreset = videoFileInfo.getVideoQualityPresetByDashStreamId(streamId);
 
@@ -218,6 +230,8 @@ public class MediaEncoder {
         } catch (Exception e) {
             logger.warn(String.format("video segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
+        } finally {
+            videoTranscodingLimiter.release();
         }
     }
 
