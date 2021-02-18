@@ -14,20 +14,16 @@
             <div class="card-body">
                 <h5 class="card-title">Choose a video file</h5>
                 <div class="file-system-navigator-path mb-3">
-                    <button type="button" class="btn btn-sm btn-outline-primary mr-3" title="Go up one level"
-                            @click="gotoPrevious">
-                        <i class="fa fa-arrow-circle-up"></i>
-                    </button>
                     <span class="text-secondary">
                         <button type="button" class="btn btn-sm btn-outline-secondary mr-1"
                                 v-for="entry in currentPathEntries"
-                                @click="goto(entry.path)">
+                                @click="open(entry)">
                             /{{ entry.name }}
                         </button>
                     </span>
                 </div>
                 <div class="file-system-navigator-list list-group">
-                    <button type="button" class="list-group-item list-group-item-action"
+                    <button type="button" class="list-group-item list-group-item-action" :class="isSelectedEntry(entry) ? 'active' : ''"
                             v-for="entry in entries" :key="entry.name" @click="open(entry)">
                         <i class="fa fa-folder" v-if="entry.type === 'Directory'"></i>
                         <i class="fa fa-file" v-if="entry.type === 'File'"></i>
@@ -89,8 +85,9 @@
                     }
                     path += segment + '/';
                     entries.push({
+                        type: 'Directory',
                         name: segment,
-                        path: path,
+                        fullPath: path,
                     });
                 });
 
@@ -106,20 +103,19 @@
         },
 
         methods: {
-            gotoPrevious() {
-                if (this.$store.state.fileSystemNavigator.data && this.$store.state.fileSystemNavigator.data.previousPath) {
-                    Api.loadFileList(this.$store.state.fileSystemNavigator.data.previousPath);
-                }
-            },
-            goto(path) {
-                Api.loadFileList(path);
-            },
             open(entry) {
                 if (entry.type === 'Directory') {
                     Api.loadFileList(entry.fullPath);
                 } else if (entry.type === 'File') {
                     Api.videoFileInfo(entry.fullPath);
                 }
+            },
+            isSelectedEntry(entry) {
+                const videoFileInfoData = this.$store.state.videoFileInfo.data;
+                if (!videoFileInfoData) {
+                    return false;
+                }
+                return videoFileInfoData.path === entry.fullPath;
             },
         },
     };
