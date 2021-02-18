@@ -27,10 +27,10 @@
     import videojs from 'video.js'
     import 'videojs-contrib-quality-levels'
     import 'videojs-hls-quality-selector'
-    import Constants from '../store/constants'
 
     export default {
         props: ['sources', 'tracks'],
+        emits: ['start-position', 'end-position'],
 
         data() {
             return {
@@ -61,18 +61,15 @@
                 this.player.pause();
                 this.player.currentTime(this.player.currentTime() + 1.0/25.0);
             },
-
             previousFrame() {
                 this.player.pause();
                 this.player.currentTime(this.player.currentTime() - 1.0/25.0);
             },
-
             setStartPosition() {
-                this.$store.commit(Constants.MUTATION_POSITION_START, this.player.currentTime());
+                this.$emit('start-position', this.player.currentTime());
             },
-
             setEndPosition() {
-                this.$store.commit(Constants.MUTATION_POSITION_END, this.player.currentTime());
+                this.$emit('end-position', this.player.currentTime());
             },
         },
     };

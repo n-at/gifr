@@ -7,7 +7,10 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <VideoJS :sources="sources" :tracks="tracks"/>
+        <VideoJS :sources="sources"
+                 :tracks="tracks"
+                 @start-position="setStartPosition"
+                 @end-position="setEndPosition"/>
     </template>
 </template>
 
@@ -60,6 +63,15 @@
                         label: `${subtitles.language}: ${subtitles.title}`,
                     }
                 });
+            },
+        },
+
+        methods: {
+            setStartPosition(position) {
+                this.$store.commit(Constants.MUTATION_POSITION_START, position);
+            },
+            setEndPosition(position) {
+                this.$store.commit(Constants.MUTATION_POSITION_END, position);
             },
         },
     };
