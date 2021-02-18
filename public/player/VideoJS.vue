@@ -4,20 +4,20 @@
         <div class="mt-3 mb-3 text-center">
             <button type="button" class="btn btn-sm btn-outline-secondary" title="Previous frame"
                     @click="previousFrame">
-                <i class="fa fa-backward"></i>
+                <i class="fa fa-minus-square"></i> frame
             </button>
             <button type="button" class="btn btn-sm btn-outline-secondary ml-1" title="Next frame"
                     @click="nextFrame">
-                <i class="fa fa-forward"></i>
+                <i class="fa fa-plus-square"></i> frame
             </button>
 
             <button type="button" class="btn btn-sm btn-outline-primary ml-3" title="Set start position"
                     @click="setStartPosition">
-                <i class="fa fa-fast-backward"></i>
+                <i class="fa fa-fast-backward"></i> Set start
             </button>
             <button type="button" class="btn btn-sm btn-outline-primary ml-1" title="Set end position"
                     @click="setEndPosition">
-                <i class="fa fa-fast-forward"></i>
+                Set end <i class="fa fa-fast-forward"></i>
             </button>
         </div>
     </div>
