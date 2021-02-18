@@ -1,6 +1,12 @@
 <template>
-    <FileSystemNavigator/>
-    <VideoFileInfo/>
+    <div class="row">
+        <div class="col-6">
+            <FileSystemNavigator/>
+        </div>
+        <div class="col-6">
+            <VideoFileInfo/>
+        </div>
+    </div>
     <VideoPlayer/>
     <Export/>
 </template>

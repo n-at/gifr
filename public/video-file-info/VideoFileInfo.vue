@@ -7,97 +7,52 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <div class="alert alert-secondary mt-3" v-if="notAVideoFile">
+        <div class="alert alert-secondary" v-if="notAVideoFile">
             Not a video file
         </div>
-        <div class="card mt-3" v-else>
+        <div v-else class="card">
             <div class="card-body">
+                <h5 class="card-title">Video file info</h5>
                 <div class="row">
-                    <div class="col-10">
-                        <div class="text-primary">
-                            <i class="fa fa-play"></i> {{ fileInfo.path }}
-                        </div>
+                    <div class="col-9">
+                        <div class="text-primary">{{ fileInfo.path }}</div>
                         <div>
                             <i class="fa fa-clock" title="Length"></i> {{ fileInfo.duration }}
                         </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div><strong>Video</strong></div>
-                                <div class="row mb-3">
-                                    <div class="col-4">Codec:</div>
-                                    <div class="col-8">{{ fileInfo.video.codecDisplay }}</div>
-
-                                    <div class="col-4">Profile:</div>
-                                    <div class="col-8">{{ fileInfo.video.profile }}</div>
-
-                                    <div class="col-4">Resolution:</div>
-                                    <div class="col-8">{{ fileInfo.video.width }}x{{ fileInfo.video.height }}</div>
-
-                                    <div class="col-4">Frame rate:</div>
-                                    <div class="col-8">{{ fileInfo.video.framerate }}</div>
-
-                                    <div class="col-4">Bitrate:</div>
-                                    <div class="col-8">{{ fileInfo.video.bitrate / 1000 }} kbit/s</div>
-
-                                    <div class="col-4">Pixel format:</div>
-                                    <div class="col-8">{{ fileInfo.video.pixelFormat }}</div>
-                                </div>
-
-                                <div v-if="fileInfo.subtitles.length">
-                                    <div><strong>Subtitles</strong></div>
-                                    <div v-for="subtitlesInfo in fileInfo.subtitles" class="row mb-3">
-                                        <div class="col-4">Name:</div>
-                                        <div class="col-8">{{ subtitlesInfo.language }}: {{ subtitlesInfo.title }}</div>
-
-                                        <div class="col-4">Format:</div>
-                                        <div class="col-8">{{ subtitlesInfo.codecDisplay }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div><strong>Audio</strong></div>
-                                <div v-for="audioInfo in fileInfo.audio" class="row mb-3">
-                                    <div class="col-4">Name:</div>
-                                    <div class="col-8">{{ audioInfo.language }}: {{ audioInfo.title }}</div>
-
-                                    <div class="col-4">Codec:</div>
-                                    <div class="col-8">{{ audioInfo.codecDisplay }}</div>
-
-                                    <div class="col-4">Channels:</div>
-                                    <div class="col-8">{{ audioInfo.channels }}</div>
-
-                                    <div class="col-4">Sample rate:</div>
-                                    <div class="col-8">{{ audioInfo.sampleRate }} Hz</div>
-
-                                    <div class="col-4">Bitrate:</div>
-                                    <div class="col-8">{{ audioInfo.bitrate / 1000 }} kbit/s</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                    <div class="col-2 text-right">
-                        <button type="button" class="btn btn-outline-primary"
-                                @click="open">
+                    <div class="col-3 text-right">
+                        <button type="button" class="btn btn-outline-primary" @click="open">
                             <i class="fa fa-play"></i> Open
                         </button>
                     </div>
                 </div>
 
+                <div class="file-info">
+                    <VideoStreams :info="fileInfo.video"/>
+                    <AudioStreams v-if="fileInfo.audio.length" :info="fileInfo.audio"/>
+                    <SubtitlesStreams v-if="fileInfo.subtitles.length" :info="fileInfo.subtitles"/>
+                </div>
             </div>
         </div>
     </template>
 </template>
 
 <script>
-    import Constants from "../store/constants"
-    import LoadingState from "../common/LoadingState.vue"
-    import ErrorState from "../common/ErrorState.vue"
-    import TimeUtils from '../utils/time'
+    import Constants from "../store/constants";
+    import LoadingState from "../common/LoadingState.vue";
+    import ErrorState from "../common/ErrorState.vue";
+    import TimeUtils from "../utils/time";
+    import VideoStreams from "./VideoStreams.vue";
+    import AudioStreams from "./AudioStreams.vue";
+    import SubtitlesStreams from "./SubtitlesStreams.vue";
 
     export default {
         components: {
             LoadingState,
             ErrorState,
+            VideoStreams,
+            AudioStreams,
+            SubtitlesStreams,
         },
 
         computed: {
@@ -149,3 +104,11 @@
         }
     };
 </script>
+
+<style>
+    .file-info {
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: 300px;
+    }
+</style>

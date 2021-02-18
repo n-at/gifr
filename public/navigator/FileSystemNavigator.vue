@@ -12,6 +12,7 @@
     <template v-else>
         <div class="file-system-navigator card">
             <div class="card-body">
+                <h5 class="card-title">Choose a video file</h5>
                 <div class="file-system-navigator-path mb-3">
                     <button type="button" class="btn btn-sm btn-outline-primary mr-3" title="Go up one level"
                             @click="gotoPrevious">
