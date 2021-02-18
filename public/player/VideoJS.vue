@@ -76,7 +76,14 @@
 </script>
 
 <style>
-    .video-js {
-        margin: 0 auto;
+    .vjs-menu .vjs-menu-item {
+        text-align: left !important;
+        padding: 3px !important;
+    }
+    .vjs-menu .vjs-menu-item.vjs-selected {
+        background-color: white !important;
+    }
+    .vjs-modal-dialog {
+        background-color: rgba(43, 51, 63, 0.75) !important;
     }
 </style>
