@@ -1,15 +1,16 @@
 <template>
     <div v-if="timeVisible" class="card mb-3">
         <div class="card-body">
-            <div class="text-primary">
-                <i class="fa fa-download"></i> gif settings
-            </div>
+            <h5 class="card-title">gif settings</h5>
             <div class="row">
                 <div class="col-2">Start:</div>
                 <div class="col-10">{{ timeStart }}</div>
 
                 <div class="col-2">End:</div>
                 <div class="col-10">{{ timeEnd }}</div>
+
+                <div class="col-2">Length:</div>
+                <div class="col-10">{{ duration }}</div>
             </div>
 
             <div v-if="exportVisible">
@@ -81,6 +82,15 @@
             timeEnd() {
                 if (this.$store.state.position.end !== null) {
                     return TimeUtils.formatTime(this.$store.state.position.end);
+                } else {
+                    return 'not defined';
+                }
+            },
+
+            duration() {
+                if (this.exportVisible) {
+                    const diff = this.$store.state.position.start - this.$store.state.position.end;
+                    return TimeUtils.formatTime(Math.abs(diff));
                 } else {
                     return 'not defined';
                 }
