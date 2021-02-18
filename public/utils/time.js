@@ -5,7 +5,7 @@ export default {
         const minutes = Math.trunc(intSeconds / 60) % 60;
         const hours = Math.trunc(intSeconds / 3600);
         const frac = time - intSeconds;
-        const seconds = intSeconds % 60 + Math.round(frac * 1000) / 1000;
+        const seconds = intSeconds % 60 + frac.toFixed(3);
         return `${hours < 10 ? '0'+hours : hours}:${minutes < 10 ? '0'+minutes : minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
     },
 
