@@ -1,8 +1,22 @@
 gifr - gif recorder
 ===================
 
-Save a fragment of local video file as gif. 
-Many formats supported (everything that `ffmpeg` can transcode).
+Streaming video player. It can play any local video file in web browser (and record gifs from it).
+
+Features:
+
+* Play local video files with many formats supported, 
+  if `FFMPEG` can transcode it - you can play it (mkv, mp4, avi, mov, wmv, webm, ...)
+* Preliminary transcoding of whole file not required - it will only transcode parts when it's necessary
+* Switch between multiple audio tracks (when part of video container)
+* Enable subtitles (when part of video container)
+* Save a fragment of video as gif (as project name suggests)
+
+Limitations:
+
+* Minor video or audio artifacts may occur
+* For local use only (no security implemented)
+* Transcoding depends on performance of the machine (some formats work better, some not)
 
 Building
 --------
@@ -18,8 +32,7 @@ Everything will be built in one `target/gifr.jar` file.
 Running
 -------
 
-Tested only on macOS and Linux systems. 
-`timeout`, `ffmpeg` and `ffprobe` are required in PATH.
+Tested only on macOS and Linux systems. `timeout`, `ffmpeg` and `ffprobe` are required in PATH.
 
 Run with `java`:
 
@@ -28,3 +41,15 @@ Run with `java`:
 Or just (since it is an executable jar):
 
     ./gifr.jar
+
+Go to http://localhost:8080
+
+Configuration
+-------------
+
+Default configuration is in `src/resources/application.yml`.
+
+License
+-------
+
+BSD-3-Clause

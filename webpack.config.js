@@ -21,6 +21,7 @@ module.exports = (env, argv) => {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    //Configuring ESLint: https://eslint.org/docs/user-guide/configuring/
     const eslintConfiguration = {
         "env": {
             "browser": true,
@@ -33,11 +34,15 @@ module.exports = (env, argv) => {
         "extends": "eslint:recommended",
         "rules": {},
     };
+
+    //babel-preset-env configuration: https://babeljs.io/docs/en/babel-preset-env
     const babelPresetConfiguration = {
         "targets": "> 0.25%, not dead",
         "useBuiltIns": "entry",
         "corejs": "3.8",
     };
+
+    //postcss options: https://webpack.js.org/loaders/postcss-loader/
     const postcssConfiguration = {
         plugins: [
             ["postcss-preset-env"],
