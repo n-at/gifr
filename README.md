@@ -10,8 +10,9 @@ Video © Blender Foundation | cloud.blender.org/spring
 Features:
 
 * Play local video files with many formats supported, 
-  if `FFMPEG` can transcode it - you can play it (mkv, mp4, avi, mov, wmv, webm, ...)
+  if `ffmpeg` can transcode it - you can play it (mkv, mp4, avi, mov, wmv, webm, ...)
 * Preliminary transcoding of whole file not required - it will only transcode parts when it's necessary
+* Adaptive video bitrate
 * Switch between multiple audio tracks (when part of video container)
 * Enable subtitles (when part of video container)
 * Save a fragment of video as gif (as project name suggests)
