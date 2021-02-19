@@ -1,4 +1,5 @@
 <template>
+    <ApplicationHeader/>
     <div class="row">
         <div class="col-6">
             <FileSystemNavigator/>
@@ -12,6 +13,7 @@
 </template>
 
 <script>
+    import ApplicationHeader from "./header/Header.vue";
     import FileSystemNavigator from "./navigator/FileSystemNavigator.vue";
     import VideoFileInfo from "./video-file-info/VideoFileInfo.vue";
     import VideoPlayer from "./player/VideoPlayer.vue";
@@ -19,6 +21,7 @@
 
     export default {
         components: {
+            ApplicationHeader,
             FileSystemNavigator,
             VideoFileInfo,
             VideoPlayer,
