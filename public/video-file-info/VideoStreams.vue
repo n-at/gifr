@@ -1,6 +1,9 @@
 <template>
     <div><strong>Video</strong></div>
     <div class="row mb-3">
+        <div class="col-4">Length:</div>
+        <div class="col-8">{{ duration }}</div>
+
         <div class="col-4">Codec:</div>
         <div class="col-8">{{ info.codecDisplay }}</div>
 
@@ -23,6 +26,6 @@
 
 <script>
     export default {
-        props: ['info'],
+        props: ['info', 'duration'],
     };
 </script>

@@ -13,12 +13,9 @@
         <div v-else class="card">
             <div class="card-body">
                 <h5 class="card-title">Video file info</h5>
-                <div class="row">
+                <div class="row mb-2">
                     <div class="col-9">
-                        <div class="text-primary">{{ fileInfo.path }}</div>
-                        <div>
-                            <i class="fa fa-clock" title="Length"></i> {{ fileInfo.duration }}
-                        </div>
+                        <div class="video-file-path text-primary">{{ fileInfo.path }}</div>
                     </div>
                     <div class="col-3 text-right">
                         <button type="button" class="btn btn-outline-primary" @click="open">
@@ -27,8 +24,8 @@
                     </div>
                 </div>
 
-                <div class="file-info">
-                    <VideoStreams :info="fileInfo.video"/>
+                <div class="video-file-info-streams">
+                    <VideoStreams :info="fileInfo.video" :duration="fileInfo.duration"/>
                     <AudioStreams v-if="fileInfo.audio.length" :info="fileInfo.audio"/>
                     <SubtitlesStreams v-if="fileInfo.subtitles.length" :info="fileInfo.subtitles"/>
                 </div>
@@ -106,7 +103,7 @@
 </script>
 
 <style>
-    .file-info {
+    .video-file-info-streams {
         overflow-y: auto;
         overflow-x: hidden;
         max-height: 300px;
