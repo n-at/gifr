@@ -159,7 +159,7 @@ public class MediaEncoder {
 
         var segmentDuration = segmentParams.getDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration + 0.023222; //magical constant
-        var timeEnd = chunkIdNumber * segmentDuration;
+        var timeEnd = chunkIdNumber * segmentDuration - 0.023222;
 
         logger.info("generating audio {} #{}, chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
@@ -170,9 +170,10 @@ public class MediaEncoder {
 
             var commandline = "ffmpeg -hide_banner -y" + " " +
                     String.format(Locale.US, "-ss %f", timeStart) + " " +
-                    String.format("-to %d", timeEnd) + " " +
+                    String.format(Locale.US, "-to %f", timeEnd) + " " +
                     String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
                     "-copyts -start_at_zero -vn" + " " +
+                    "-af aresample=async=1000" + " " +
                     String.format("-map 0:%d", stream.getIndex()) + " " +
                     globalAudioEncodingParams.toEncoderOptions() + " " +
                     "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
