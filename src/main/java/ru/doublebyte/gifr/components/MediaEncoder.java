@@ -176,7 +176,7 @@ public class MediaEncoder {
                     "-af aresample=async=1000" + " " +
                     String.format("-map 0:%d", stream.getIndex()) + " " +
                     globalAudioEncodingParams.toEncoderOptions() + " " +
-                    "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
+                    "-f mpegts -bitexact -muxdelay 0 -muxpreload 0" + " " +
                     String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
 
             timeoutCommandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
@@ -224,7 +224,7 @@ public class MediaEncoder {
                     String.format("-b:v %dk", qualityPreset.getBitrate()) + " " +
                     String.format("-maxrate %dk", qualityPreset.getMaxrate()) + " " +
                     String.format("-bufsize %dk", qualityPreset.getBufsize()) + " " +
-                    "-f mpegts -muxdelay 0 -muxpreload 0" + " " +
+                    "-f mpegts -bitexact -muxdelay 0 -muxpreload 0" + " " +
                     String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
 
             timeoutCommandlineExecutor.execute(commandline, globalVideoEncodingParams.getEncodingTimeout());
