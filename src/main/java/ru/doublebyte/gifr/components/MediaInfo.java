@@ -5,9 +5,9 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
+import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
-import ru.doublebyte.gifr.utils.FileNameUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,12 +19,12 @@ public class MediaInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
 
-    private final TimeoutCommandlineExecutor timeoutCommandlineExecutor;
+    private final CommandlineExecutor commandlineExecutor;
     private final Cache<String, VideoFileInfo> videoFileInfoCache;
     private final Cache<String, VideoFileInfo> videoFileInfoByIdCache;
 
-    public MediaInfo(TimeoutCommandlineExecutor timeoutCommandlineExecutor) {
-        this.timeoutCommandlineExecutor = timeoutCommandlineExecutor;
+    public MediaInfo(CommandlineExecutor commandlineExecutor) {
+        this.commandlineExecutor = commandlineExecutor;
         this.videoFileInfoCache = Caffeine.newBuilder().build();
         this.videoFileInfoByIdCache = Caffeine.newBuilder().build();
     }
@@ -88,18 +88,18 @@ public class MediaInfo {
      */
     protected List<StreamInfo> getFileMediaStreams(String videoFilePath) {
         try {
-            final var commandline =
-                    "ffprobe -loglevel error" + " " +
-                    "-show_entries stream" + " " +
-                    "-of default=noprint_wrappers=1:nokey=0" + " " +
-                    String.format("\"%s\"", FileNameUtils.escape(videoFilePath));
+            final var commandline = new CommandlineArguments("ffprobe")
+                    .add("-loglevel", "error")
+                    .add("-show_entries", "stream")
+                    .add("-of", "default=noprint_wrappers=1:nokey=0")
+                    .add(videoFilePath);
 
-            var output = timeoutCommandlineExecutor.execute(commandline);
-            if (output == null || output.isEmpty()) {
-                return null;
+            var output = commandlineExecutor.execute(commandline);
+            if (output != null && !output.isEmpty()) {
+                return fromFFProbeOutput(output);
+            } else {
+                throw new Exception("stream info not found");
             }
-
-            return fromFFProbeOutput(output);
         } catch (Exception e) {
             logger.error("file media streams error " + videoFilePath, e);
             return null;
@@ -114,22 +114,25 @@ public class MediaInfo {
      */
     protected double getFileDuration(String videoFilePath) {
         try {
-            final var commandline =
-                    "ffprobe -loglevel error -show_entries format=duration" + " " +
-                    "-of default=noprint_wrappers=1:nokey=1" + " " +
-                    String.format("\"%s\"", FileNameUtils.escape(videoFilePath));
+            final var commandline = new CommandlineArguments("ffprobe")
+                    .add("-loglevel", "error")
+                    .add("-show_entries", "format=duration")
+                    .add("-of", "default=noprint_wrappers=1:nokey=1")
+                    .add(videoFilePath);
 
-            var output = timeoutCommandlineExecutor.execute(commandline);
-            if (output == null || output.isEmpty()) {
+            var output = commandlineExecutor.execute(commandline);
+            if (output != null && !output.isEmpty()) {
+                return ffprobeDouble(output);
+            } else {
                 throw new Exception("duration not found");
             }
-
-            return ffprobeDouble(output);
         } catch (Exception e) {
             logger.error("get duration error " + videoFilePath, e);
             return 0;
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
      * Read stream info from output of ffprobe output

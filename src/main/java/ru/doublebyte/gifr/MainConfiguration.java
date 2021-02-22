@@ -58,7 +58,7 @@ public class MainConfiguration {
 
     @Bean
     public MediaInfo mediaInfo() {
-        return new MediaInfo(timeoutCommandlineExecutor());
+        return new MediaInfo(commandlineExecutor());
     }
 
     @Bean
