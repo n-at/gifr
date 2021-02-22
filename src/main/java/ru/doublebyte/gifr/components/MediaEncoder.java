@@ -2,6 +2,7 @@ package ru.doublebyte.gifr.components;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.doublebyte.gifr.configuration.FFMPEGParams;
 import ru.doublebyte.gifr.configuration.GlobalAudioEncodingParams;
 import ru.doublebyte.gifr.configuration.GlobalVideoEncodingParams;
 import ru.doublebyte.gifr.configuration.SegmentParams;
@@ -22,6 +23,7 @@ public class MediaEncoder {
     private final CommandlineExecutor commandlineExecutor;
     private final GlobalVideoEncodingParams globalVideoEncodingParams;
     private final GlobalAudioEncodingParams globalAudioEncodingParams;
+    private final FFMPEGParams ffmpegParams;
     private final SegmentParams segmentParams;
     private final FileManipulation fileManipulation;
 
@@ -32,12 +34,14 @@ public class MediaEncoder {
             CommandlineExecutor commandlineExecutor,
             GlobalVideoEncodingParams globalVideoEncodingParams,
             GlobalAudioEncodingParams globalAudioEncodingParams,
+            FFMPEGParams ffmpegParams,
             SegmentParams segmentParams,
             FileManipulation fileManipulation
     ) {
         this.commandlineExecutor = commandlineExecutor;
         this.globalVideoEncodingParams = globalVideoEncodingParams;
         this.globalAudioEncodingParams = globalAudioEncodingParams;
+        this.ffmpegParams = ffmpegParams;
         this.segmentParams = segmentParams;
         this.fileManipulation = fileManipulation;
         this.videoTranscodingLimiter = new Semaphore(globalVideoEncodingParams.getConcurrentJobs());
@@ -55,7 +59,7 @@ public class MediaEncoder {
         final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
 
         final var commandline =
-                new CommandlineArguments("ffmpeg")
+                new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
                 .add("-y")
                 .add("-ss", 0)
@@ -172,7 +176,7 @@ public class MediaEncoder {
             audioTranscodingLimiter.acquire();
 
             final var commandline =
-                    new CommandlineArguments("ffmpeg")
+                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-ss", String.format(Locale.US, "%f", timeStart))
@@ -222,7 +226,7 @@ public class MediaEncoder {
             videoTranscodingLimiter.acquire();
 
             final var commandline =
-                    new CommandlineArguments("ffmpeg")
+                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-ss", timeStart)
@@ -264,7 +268,7 @@ public class MediaEncoder {
 
         try {
             final var commandline =
-                    new CommandlineArguments("ffmpeg")
+                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-i", videoFileInfo.getPath())

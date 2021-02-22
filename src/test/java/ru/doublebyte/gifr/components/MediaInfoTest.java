@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MediaInfoTest {
 
-    private final MediaInfo mediaInfo = new MediaInfo(null);
+    private final MediaInfo mediaInfo = new MediaInfo(null, null);
 
     @Test
     void ffprobeInteger() {

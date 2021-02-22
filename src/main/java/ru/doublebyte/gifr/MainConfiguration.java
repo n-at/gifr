@@ -12,7 +12,13 @@ import ru.doublebyte.gifr.configuration.*;
 public class MainConfiguration {
 
     @Bean
-    @ConfigurationProperties(prefix = "file-system-navigator")
+    @ConfigurationProperties(prefix = "ffmpeg-params")
+    public FFMPEGParams ffmpegParams() {
+        return new FFMPEGParams();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "file-system-navigator-params")
     public FileSystemNavigatorConfiguration fileSystemNavigatorConfiguration() {
         return new FileSystemNavigatorConfiguration();
     }
@@ -53,7 +59,7 @@ public class MainConfiguration {
 
     @Bean
     public MediaInfo mediaInfo() {
-        return new MediaInfo(commandlineExecutor());
+        return new MediaInfo(ffmpegParams(), commandlineExecutor());
     }
 
     @Bean
@@ -67,6 +73,7 @@ public class MainConfiguration {
                 commandlineExecutor(),
                 globalVideoEncodingParams(),
                 globalAudioEncodingParams(),
+                ffmpegParams(),
                 segmentParams(),
                 fileManipulation()
         );
@@ -79,7 +86,7 @@ public class MainConfiguration {
 
     @Bean
     public GifExporter gifExporter() {
-        return new GifExporter(commandlineExecutor(), exportParams());
+        return new GifExporter(commandlineExecutor(), ffmpegParams(), exportParams());
     }
 
 }

@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
+import ru.doublebyte.gifr.configuration.FFMPEGParams;
 import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 import ru.doublebyte.gifr.struct.mediainfo.StreamInfo;
@@ -19,11 +20,13 @@ public class MediaInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaInfo.class);
 
+    private final FFMPEGParams ffmpegParams;
     private final CommandlineExecutor commandlineExecutor;
     private final Cache<String, VideoFileInfo> videoFileInfoCache;
     private final Cache<String, VideoFileInfo> videoFileInfoByIdCache;
 
-    public MediaInfo(CommandlineExecutor commandlineExecutor) {
+    public MediaInfo(FFMPEGParams ffmpegParams, CommandlineExecutor commandlineExecutor) {
+        this.ffmpegParams = ffmpegParams;
         this.commandlineExecutor = commandlineExecutor;
         this.videoFileInfoCache = Caffeine.newBuilder().build();
         this.videoFileInfoByIdCache = Caffeine.newBuilder().build();
@@ -89,7 +92,7 @@ public class MediaInfo {
     protected List<StreamInfo> getFileMediaStreams(String videoFilePath) {
         try {
             final var commandline =
-                    new CommandlineArguments("ffprobe")
+                    new CommandlineArguments(ffmpegParams.getFFProbeBinary())
                     .add("-loglevel", "error")
                     .add("-show_entries", "stream")
                     .add("-of", "default=noprint_wrappers=1:nokey=0")
@@ -116,7 +119,7 @@ public class MediaInfo {
     protected double getFileDuration(String videoFilePath) {
         try {
             final var commandline =
-                    new CommandlineArguments("ffprobe")
+                    new CommandlineArguments(ffmpegParams.getFFProbeBinary())
                     .add("-loglevel", "error")
                     .add("-show_entries", "format=duration")
                     .add("-of", "default=noprint_wrappers=1:nokey=1")

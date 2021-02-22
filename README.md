@@ -37,7 +37,7 @@ Everything will be built in one `target/gifr.jar` file.
 Running
 -------
 
-Tested only on macOS and Linux systems. `timeout`, `ffmpeg` and `ffprobe` are required in PATH.
+Tested only on macOS and Linux systems. `ffmpeg` and `ffprobe` are required in PATH.
 
 Run with `java`:
 

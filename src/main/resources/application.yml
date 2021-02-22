@@ -2,7 +2,11 @@ server:
   address: "127.0.0.1"
   port: 8080
 
-file-system-navigator:
+ffmpeg-params:
+  ffmpeg-binary: "ffmpeg"
+  ffprobe-binary: "ffprobe"
+
+file-system-navigator-params:
   default-start-directory: ""
 
 global-video-encoding-params:

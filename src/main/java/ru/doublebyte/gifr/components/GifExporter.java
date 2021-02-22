@@ -1,6 +1,7 @@
 package ru.doublebyte.gifr.components;
 
 import ru.doublebyte.gifr.configuration.ExportParams;
+import ru.doublebyte.gifr.configuration.FFMPEGParams;
 import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
@@ -13,13 +14,16 @@ import java.util.UUID;
 public class GifExporter {
 
     private final CommandlineExecutor commandlineExecutor;
+    private final FFMPEGParams ffmpegParams;
     private final ExportParams exportParams;
 
     public GifExporter(
             CommandlineExecutor commandlineExecutor,
+            FFMPEGParams ffmpegParams,
             ExportParams exportParams
     ) {
         this.commandlineExecutor = commandlineExecutor;
+        this.ffmpegParams = ffmpegParams;
         this.exportParams = exportParams;
     }
 
@@ -45,7 +49,7 @@ public class GifExporter {
         var outputPath = Paths.get(exportParams.getPath(), UUID.randomUUID().toString() + ".gif");
 
         final var commandline =
-                new CommandlineArguments("ffmpeg")
+                new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
                 .add("-y")
                 .add("-ss", String.format(Locale.US, "%f", start))
