@@ -1,5 +1,7 @@
 package ru.doublebyte.gifr.configuration;
 
+import ru.doublebyte.gifr.struct.CommandlineArguments;
+
 public enum VideoQualityPreset {
 
     Video360(360, 800, 856, 1200),
@@ -22,9 +24,20 @@ public enum VideoQualityPreset {
         this.bufsize = bufsize;
     }
 
-    public String toVideoEncodingOptions(int streamIdx, int presetIdx) {
-        return String.format("-map 0:%d -filter:v:%d \"scale=-2:%d\" -b:v:%d %dk -maxrate:%d %dk -bufsize:%d %dk",
-                streamIdx, presetIdx, size, presetIdx, bitrate, presetIdx, maxrate, presetIdx, bufsize);
+    public CommandlineArguments toCommandlineArguments() {
+        return new CommandlineArguments()
+                .add("-vf", String.format("scale=-2:%d", size))
+                .add("-b:v", String.format("%dk", bitrate))
+                .add("-maxrate", String.format("%dk", maxrate))
+                .add("-bufsize", String.format("%dk", bufsize));
+    }
+
+    public CommandlineArguments toCommandlineArguments(int presetIdx) {
+        return new CommandlineArguments()
+                .add(String.format("-filter:v:%d", presetIdx), String.format("scale=-2:%d", size))
+                .add(String.format("-b:v:%d", presetIdx), String.format("%dk", bitrate))
+                .add(String.format("-maxrate:%d", presetIdx), String.format("%dk", maxrate))
+                .add(String.format("-bufsize:%d", presetIdx), String.format("%dk", bufsize));
     }
 
     public int getSize() {

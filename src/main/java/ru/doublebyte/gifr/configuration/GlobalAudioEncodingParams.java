@@ -1,5 +1,7 @@
 package ru.doublebyte.gifr.configuration;
 
+import ru.doublebyte.gifr.struct.CommandlineArguments;
+
 public class GlobalAudioEncodingParams {
 
     private String codec = "aac";
@@ -15,9 +17,12 @@ public class GlobalAudioEncodingParams {
 
     }
 
-    public String toEncoderOptions() {
-        return String.format("-c:a %s -b:a %s -ac %d -ar %d",
-                codec, bitrate, channels, sampleRate);
+    public CommandlineArguments toCommandlineArguments() {
+        return new CommandlineArguments()
+                .add("-c:a", codec)
+                .add("-b:a", bitrate)
+                .add("-ac", channels)
+                .add("-ar", sampleRate);
     }
 
     ///////////////////////////////////////////////////////////////////////////

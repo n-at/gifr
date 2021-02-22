@@ -10,6 +10,10 @@ public class CommandlineArguments {
 
     ///////////////////////////////////////////////////////////////////////////
 
+    public CommandlineArguments() {
+
+    }
+
     public CommandlineArguments(String command) {
         arguments.add(command);
     }
@@ -20,14 +24,24 @@ public class CommandlineArguments {
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public CommandlineArguments add(String argument, String value) {
+    public CommandlineArguments add(String argument, Object value) {
         arguments.add(argument);
-        arguments.add(value);
+        arguments.add(value.toString());
         return this;
     }
 
     public CommandlineArguments add(String argument) {
         arguments.add(argument);
+        return this;
+    }
+
+    public CommandlineArguments add(List<String> arguments) {
+        this.arguments.addAll(arguments);
+        return this;
+    }
+
+    public CommandlineArguments add(CommandlineArguments arguments) {
+        this.arguments.addAll(arguments.getArguments());
         return this;
     }
 

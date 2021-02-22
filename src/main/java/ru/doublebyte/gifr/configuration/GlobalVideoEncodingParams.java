@@ -1,5 +1,7 @@
 package ru.doublebyte.gifr.configuration;
 
+import ru.doublebyte.gifr.struct.CommandlineArguments;
+
 public class GlobalVideoEncodingParams {
 
     private int framerate = 25;
@@ -17,9 +19,16 @@ public class GlobalVideoEncodingParams {
 
     }
 
-    public String toEncoderOptions() {
-        return String.format("-r %d -preset %s -profile:v %s -keyint_min %d -g %d -sc_threshold 0 -c:v %s -pix_fmt %s",
-                framerate, preset, profile, keyframes, keyframes, codec, pixelFormat);
+    public CommandlineArguments toCommandlineArguments() {
+        return new CommandlineArguments()
+                .add("-r", framerate)
+                .add("-preset", preset)
+                .add("-profile:v", profile)
+                .add("-keyint_min", keyframes)
+                .add("-g", keyframes)
+                .add("-sc_threshold", 0)
+                .add("-c:v", codec)
+                .add("-pix_fmt", pixelFormat);
     }
 
     ///////////////////////////////////////////////////////////////////////////

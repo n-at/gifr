@@ -69,7 +69,7 @@ public class MainConfiguration {
     @Bean
     public MediaEncoder mediaEncoder() {
         return new MediaEncoder(
-                timeoutCommandlineExecutor(),
+                commandlineExecutor(),
                 globalVideoEncodingParams(),
                 globalAudioEncodingParams(),
                 segmentParams(),

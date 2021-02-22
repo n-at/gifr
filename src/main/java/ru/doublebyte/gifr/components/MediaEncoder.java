@@ -5,11 +5,10 @@ import org.slf4j.LoggerFactory;
 import ru.doublebyte.gifr.configuration.GlobalAudioEncodingParams;
 import ru.doublebyte.gifr.configuration.GlobalVideoEncodingParams;
 import ru.doublebyte.gifr.configuration.SegmentParams;
+import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
-import ru.doublebyte.gifr.utils.FileNameUtils;
 
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -20,7 +19,7 @@ public class MediaEncoder {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaEncoder.class);
 
-    private final TimeoutCommandlineExecutor timeoutCommandlineExecutor;
+    private final CommandlineExecutor commandlineExecutor;
     private final GlobalVideoEncodingParams globalVideoEncodingParams;
     private final GlobalAudioEncodingParams globalAudioEncodingParams;
     private final SegmentParams segmentParams;
@@ -30,13 +29,13 @@ public class MediaEncoder {
     private final Semaphore audioTranscodingLimiter;
 
     public MediaEncoder(
-            TimeoutCommandlineExecutor timeoutCommandlineExecutor,
+            CommandlineExecutor commandlineExecutor,
             GlobalVideoEncodingParams globalVideoEncodingParams,
             GlobalAudioEncodingParams globalAudioEncodingParams,
             SegmentParams segmentParams,
             FileManipulation fileManipulation
     ) {
-        this.timeoutCommandlineExecutor = timeoutCommandlineExecutor;
+        this.commandlineExecutor = commandlineExecutor;
         this.globalVideoEncodingParams = globalVideoEncodingParams;
         this.globalAudioEncodingParams = globalAudioEncodingParams;
         this.segmentParams = segmentParams;
@@ -56,21 +55,26 @@ public class MediaEncoder {
         final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
 
         final var commandline =
-                "ffmpeg -hide_banner -y" + " " +
-                "-ss 0 -t 1" + " " +
-                String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
-                globalVideoEncodingParams.toEncoderOptions() + " " +
-                globalAudioEncodingParams.toEncoderOptions() + " " +
-                String.join(" ", getDashStreams(videoFileInfo)) + " " +
-                String.format("-init_seg_name \"init-%s-\\$RepresentationID\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
-                String.format("-media_seg_name \"chunk-%s-\\$RepresentationID\\$-\\$Number%%05d\\$.\\$ext\\$\"", videoFileInfo.getChecksum()) + " " +
-                "-dash_segment_type mp4 -use_template 1 -use_timeline 0" + " " +
-                String.format("-seg_duration %d", segmentParams.getDuration()) + " " +
-                String.format("-adaptation_sets \"%s\"", getDashAdaptationSets(videoFileInfo)) + " " +
-                "-f dash" + " " +
-                String.format("\"%s\"", FileNameUtils.escape(dashFilePath.toString()));
+                new CommandlineArguments("ffmpeg")
+                .add("-hide_banner")
+                .add("-y")
+                .add("-ss", 0)
+                .add("-t", 1)
+                .add("-i", videoFileInfo.getPath())
+                .add(globalVideoEncodingParams.toCommandlineArguments())
+                .add(globalAudioEncodingParams.toCommandlineArguments())
+                .add(getDashStreams(videoFileInfo))
+                .add("-init_seg_name", String.format("init-%s-$RepresentationID$.$ext$", videoFileInfo.getChecksum()))
+                .add("-media_seg_name", String.format("chunk-%s-$RepresentationID$-$Number%%05d$.$ext$", videoFileInfo.getChecksum()))
+                .add("-dash_segment_type", "mp4")
+                .add("-use_template", 1)
+                .add("-use_timeline", 0)
+                .add("-seg_duration", segmentParams.getDuration())
+                .add("-adaptation_sets", getDashAdaptationSets(videoFileInfo))
+                .add("-f", "dash")
+                .add(dashFilePath.toString());
 
-        timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
+        commandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout(), true);
 
         try {
             var dash = Files.readString(dashFilePath);
@@ -114,20 +118,21 @@ public class MediaEncoder {
      * @param videoFileInfo ...
      * @return ...
      */
-    private List<String> getDashStreams(VideoFileInfo videoFileInfo) {
-        final var streams = videoFileInfo.getAudioStreams()
-                .stream()
-                .map(stream -> String.format("-map 0:%d", stream.getIndex()))
-                .collect(Collectors.toList());
+    private CommandlineArguments getDashStreams(VideoFileInfo videoFileInfo) {
+        final var arguments = new CommandlineArguments();
+
+        videoFileInfo.getAudioStreams()
+                .forEach(stream -> arguments.add("-map", String.format("0:%d", stream.getIndex())));
 
         final var videoStreamIdx = videoFileInfo.getVideoStream().getIndex();
         final var videoPresets = videoFileInfo.getAvailableVideoQualityPresets();
         for (var presetIdx = 0; presetIdx < videoPresets.size(); presetIdx++) {
-            var preset = videoPresets.get(presetIdx);
-            streams.add(preset.toVideoEncodingOptions(videoStreamIdx, presetIdx));
+            arguments
+                    .add("-map", String.format("0:%d", videoStreamIdx))
+                    .add(videoPresets.get(presetIdx).toCommandlineArguments(presetIdx));
         }
 
-        return streams;
+        return arguments;
     }
 
     /**
@@ -166,20 +171,26 @@ public class MediaEncoder {
         try {
             audioTranscodingLimiter.acquire();
 
-            var stream = videoFileInfo.getAudioStreamByDashStreamId(streamId);
+            final var commandline =
+                    new CommandlineArguments("ffmpeg")
+                    .add("-hide_banner")
+                    .add("-y")
+                    .add("-ss", String.format(Locale.US, "%f", timeStart))
+                    .add("-to", String.format(Locale.US, "%f", timeEnd))
+                    .add("-i", videoFileInfo.getPath())
+                    .add("-copyts")
+                    .add("-start_at_zero")
+                    .add("-vn")
+                    .add("-af", "aresample=async=1000")
+                    .add("-map", String.format("0:%d", videoFileInfo.getAudioStreamByDashStreamId(streamId).getIndex()))
+                    .add(globalAudioEncodingParams.toCommandlineArguments())
+                    .add("-f", "mpegts")
+                    .add("-bitexact")
+                    .add("-muxdelay", 0)
+                    .add("-muxpreload", 0)
+                    .add(chunkFilePath.toString());
 
-            var commandline = "ffmpeg -hide_banner -y" + " " +
-                    String.format(Locale.US, "-ss %f", timeStart) + " " +
-                    String.format(Locale.US, "-to %f", timeEnd) + " " +
-                    String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
-                    "-copyts -start_at_zero -vn" + " " +
-                    "-af aresample=async=1000" + " " +
-                    String.format("-map 0:%d", stream.getIndex()) + " " +
-                    globalAudioEncodingParams.toEncoderOptions() + " " +
-                    "-f mpegts -bitexact -muxdelay 0 -muxpreload 0" + " " +
-                    String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
-
-            timeoutCommandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
+            commandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
@@ -210,24 +221,26 @@ public class MediaEncoder {
         try {
             videoTranscodingLimiter.acquire();
 
-            var stream = videoFileInfo.getVideoStream();
-            var qualityPreset = videoFileInfo.getVideoQualityPresetByDashStreamId(streamId);
+            final var commandline =
+                    new CommandlineArguments("ffmpeg")
+                    .add("-hide_banner")
+                    .add("-y")
+                    .add("-ss", timeStart)
+                    .add("-to", timeEnd)
+                    .add("-i", videoFileInfo.getPath())
+                    .add("-copyts")
+                    .add("-start_at_zero")
+                    .add("-an")
+                    .add("-map", String.format("0:%d", videoFileInfo.getVideoStream().getIndex()))
+                    .add(globalVideoEncodingParams.toCommandlineArguments())
+                    .add(videoFileInfo.getVideoQualityPresetByDashStreamId(streamId).toCommandlineArguments())
+                    .add("-f", "mpegts")
+                    .add("-bitexact")
+                    .add("-muxdelay", 0)
+                    .add("-muxpreload", 0)
+                    .add(chunkFilePath.toString());
 
-            var commandline = "ffmpeg -hide_banner -y" + " " +
-                    String.format("-ss %d", timeStart) + " " +
-                    String.format("-to %d", timeEnd) + " " +
-                    String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
-                    "-copyts -start_at_zero -an" + " " +
-                    String.format("-map 0:%d", stream.getIndex()) + " " +
-                    globalVideoEncodingParams.toEncoderOptions() + " " +
-                    String.format("-vf \"scale=-2:%d\"", qualityPreset.getSize()) + " " +
-                    String.format("-b:v %dk", qualityPreset.getBitrate()) + " " +
-                    String.format("-maxrate %dk", qualityPreset.getMaxrate()) + " " +
-                    String.format("-bufsize %dk", qualityPreset.getBufsize()) + " " +
-                    "-f mpegts -bitexact -muxdelay 0 -muxpreload 0" + " " +
-                    String.format("\"%s\"", FileNameUtils.escape(chunkFilePath.toString()));
-
-            timeoutCommandlineExecutor.execute(commandline, globalVideoEncodingParams.getEncodingTimeout());
+            commandlineExecutor.execute(commandline, globalVideoEncodingParams.getEncodingTimeout());
         } catch (Exception e) {
             logger.warn(String.format("video segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
@@ -250,16 +263,16 @@ public class MediaEncoder {
         logger.info("generating subtitles {} #{}", videoFileInfo.getChecksum(), streamId);
 
         try {
-            var stream = videoFileInfo.getSubtitlesStreamByDashStreamId(streamId);
+            final var commandline =
+                    new CommandlineArguments("ffmpeg")
+                    .add("-hide_banner")
+                    .add("-y")
+                    .add("-i", videoFileInfo.getPath())
+                    .add("-map", String.format("0:%d", videoFileInfo.getSubtitlesStreamByDashStreamId(streamId).getIndex()))
+                    .add("-c:s", "webvtt")
+                    .add(filePath.toString());
 
-            var commandline =
-                    "ffmpeg -hide_banner -y" + " " +
-                    String.format("-i \"%s\"", FileNameUtils.escape(videoFileInfo.getPath())) + " " +
-                    String.format("-map 0:%d", stream.getIndex()) + " " +
-                    "-c:s webvtt" + " " +
-                    String.format("\"%s\"", FileNameUtils.escape(filePath.toString()));
-
-            timeoutCommandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
+            commandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout());
         } catch (Exception e) {
             logger.warn(String.format("subtitles encoding error %s %s", videoFileInfo.getPath(), streamId));
             throw new RuntimeException(e);

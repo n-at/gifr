@@ -88,7 +88,8 @@ public class MediaInfo {
      */
     protected List<StreamInfo> getFileMediaStreams(String videoFilePath) {
         try {
-            final var commandline = new CommandlineArguments("ffprobe")
+            final var commandline =
+                    new CommandlineArguments("ffprobe")
                     .add("-loglevel", "error")
                     .add("-show_entries", "stream")
                     .add("-of", "default=noprint_wrappers=1:nokey=0")
@@ -114,7 +115,8 @@ public class MediaInfo {
      */
     protected double getFileDuration(String videoFilePath) {
         try {
-            final var commandline = new CommandlineArguments("ffprobe")
+            final var commandline =
+                    new CommandlineArguments("ffprobe")
                     .add("-loglevel", "error")
                     .add("-show_entries", "format=duration")
                     .add("-of", "default=noprint_wrappers=1:nokey=1")
