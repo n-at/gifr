@@ -52,6 +52,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CommandlineExecutor commandlineExecutor() {
+        return new CommandlineExecutor();
+    }
+
+    @Bean
     public MediaInfo mediaInfo() {
         return new MediaInfo(timeoutCommandlineExecutor());
     }

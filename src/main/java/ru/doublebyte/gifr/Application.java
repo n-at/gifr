@@ -5,10 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.util.StreamUtils;
+import ru.doublebyte.gifr.components.CommandlineExecutor;
 import ru.doublebyte.gifr.components.FileManipulation;
-
-import java.nio.charset.Charset;
+import ru.doublebyte.gifr.struct.CommandlineArguments;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -16,9 +15,11 @@ public class Application implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     private final FileManipulation fileManipulation;
+    private final CommandlineExecutor commandlineExecutor;
 
-    public Application(FileManipulation fileManipulation) {
+    public Application(FileManipulation fileManipulation, CommandlineExecutor commandlineExecutor) {
         this.fileManipulation = fileManipulation;
+        this.commandlineExecutor = commandlineExecutor;
     }
 
     public static void main(String[] args) {
@@ -29,21 +30,13 @@ public class Application implements CommandLineRunner {
     public void run(String... args) {
         fileManipulation.ensureDirectoriesExist();
         fileManipulation.removeEncodedChunks();
-        which("timeout");
         which("ffprobe");
         which("ffmpeg");
     }
 
     protected void which(String program) {
         try {
-            var process = new ProcessBuilder("/bin/sh", "-c", "which " + program)
-                    .redirectErrorStream(true)
-                    .start();
-            var output = StreamUtils.copyToString(process.getInputStream(), Charset.defaultCharset());
-            var exitCode = process.waitFor();
-            if (exitCode != 0) {
-                throw new Exception("exit code=" + exitCode);
-            }
+            var output = commandlineExecutor.execute(new CommandlineArguments("which").add(program));
             logger.info("Using {} from {}", program, output.trim());
         } catch (Exception e) {
             logger.error("program test error " + program, e);
