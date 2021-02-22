@@ -47,11 +47,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public TimeoutCommandlineExecutor timeoutCommandlineExecutor() {
-        return new TimeoutCommandlineExecutor();
-    }
-
-    @Bean
     public CommandlineExecutor commandlineExecutor() {
         return new CommandlineExecutor();
     }
@@ -84,7 +79,7 @@ public class MainConfiguration {
 
     @Bean
     public GifExporter gifExporter() {
-        return new GifExporter(timeoutCommandlineExecutor(), exportParams());
+        return new GifExporter(commandlineExecutor(), exportParams());
     }
 
 }

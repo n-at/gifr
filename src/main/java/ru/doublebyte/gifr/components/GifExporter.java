@@ -1,6 +1,7 @@
 package ru.doublebyte.gifr.components;
 
 import ru.doublebyte.gifr.configuration.ExportParams;
+import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 import java.io.InputStream;
@@ -11,14 +12,14 @@ import java.util.UUID;
 
 public class GifExporter {
 
-    private final TimeoutCommandlineExecutor timeoutCommandlineExecutor;
+    private final CommandlineExecutor commandlineExecutor;
     private final ExportParams exportParams;
 
     public GifExporter(
-            TimeoutCommandlineExecutor timeoutCommandlineExecutor,
+            CommandlineExecutor commandlineExecutor,
             ExportParams exportParams
     ) {
-        this.timeoutCommandlineExecutor = timeoutCommandlineExecutor;
+        this.commandlineExecutor = commandlineExecutor;
         this.exportParams = exportParams;
     }
 
@@ -43,15 +44,18 @@ public class GifExporter {
 
         var outputPath = Paths.get(exportParams.getPath(), UUID.randomUUID().toString() + ".gif");
 
-        final var commandline = "ffmpeg -hide_banner -y" + " " +
-                String.format(Locale.US, "-ss %f", start) + " " +
-                String.format(Locale.US, "-to %f", end) + " " +
-                String.format("-i \"%s\"", videoFilePath) + " " +
-                String.format("-vf \"fps=%d,scale=-1:%d:flags=lanczos\"", framerate, size) + " " +
-                outputPath.toAbsolutePath().toString();
+        final var commandline =
+                new CommandlineArguments("ffmpeg")
+                .add("-hide_banner")
+                .add("-y")
+                .add("-ss", String.format(Locale.US, "%f", start))
+                .add("-to", String.format(Locale.US, "%f", end))
+                .add("-i", videoFilePath)
+                .add("-vf", String.format("fps=%d,scale=-1:%d:flags=lanczos", framerate, size))
+                .add(outputPath.toString());
 
         try {
-            timeoutCommandlineExecutor.execute(commandline);
+            commandlineExecutor.execute(commandline);
             return Files.newInputStream(outputPath);
         } catch (Exception e) {
             throw new RuntimeException(e);
