@@ -15,7 +15,7 @@
                 <h5 class="card-title">Video file info</h5>
                 <div class="row mb-2">
                     <div class="col-9">
-                        <div class="video-file-path text-primary">{{ fileInfo.path }}</div>
+                        <div class="video-file-path">{{ fileInfo.path }}</div>
                     </div>
                     <div class="col-3 text-right">
                         <button type="button" class="btn btn-outline-primary" @click="open">
