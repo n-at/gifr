@@ -10,6 +10,8 @@ import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -167,13 +169,15 @@ public class MediaEncoder {
         var chunkIdNumber = Integer.parseInt(chunkId);
 
         var segmentDuration = segmentParams.getDuration();
-        var timeStart = (chunkIdNumber - 1) * segmentDuration + 0.023222; //magical constant
-        var timeEnd = chunkIdNumber * segmentDuration - 0.023222;
+        var timeStart = (chunkIdNumber - 1) * segmentDuration + 0.021333; //magical constant
+        var timeEnd = chunkIdNumber * segmentDuration + 0.0;
 
         logger.info("generating audio {} #{}, chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
         try {
             audioTranscodingLimiter.acquire();
+
+            final var convertedChunkFilePath = Paths.get(chunkFilePath.toString() + ".ts");
 
             final var commandline =
                     new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
@@ -192,9 +196,11 @@ public class MediaEncoder {
                     .add("-bitexact")
                     .add("-muxdelay", 0)
                     .add("-muxpreload", 0)
-                    .add(chunkFilePath.toString());
+                    .add(convertedChunkFilePath.toString());
 
             commandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
+
+            Files.move(convertedChunkFilePath, chunkFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
