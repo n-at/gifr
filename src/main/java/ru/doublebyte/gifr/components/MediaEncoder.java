@@ -10,6 +10,8 @@ import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -159,8 +161,12 @@ public class MediaEncoder {
      * @return ...
      */
     private double getSegmentDuration() {
-        final var sampleDuration = 1024.0 / globalAudioEncodingParams.getSampleRate();
-        return Math.ceil(segmentParams.getDuration() / sampleDuration) * sampleDuration;
+        final var frameDuration = getFrameDuration();
+        return Math.ceil(segmentParams.getDuration() / frameDuration) * frameDuration;
+    }
+
+    private double getFrameDuration() {
+        return 1024.0 / globalAudioEncodingParams.getSampleRate();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -176,14 +182,24 @@ public class MediaEncoder {
         var chunkFilePath = fileManipulation.getChunkFilePath(videoFileInfo.getChecksum(), streamId, chunkId);
         var chunkIdNumber = Integer.parseInt(chunkId);
 
+        var overhead = Math.ceil(1.0 / getFrameDuration()) * getFrameDuration();
+
         var segmentDuration = getSegmentDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration;
-        var timeEnd = chunkIdNumber * segmentDuration - 1e-6;
+        var timeEnd = chunkIdNumber * segmentDuration;
+
+        if (chunkIdNumber > 1) {
+            //to remove aac encoder delay (1024 samples in beginning of stream) add some overhead
+            //and later trim it with delay
+            timeStart -= overhead;
+        }
 
         logger.info("generating audio {} #{}, chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
         try {
             audioTranscodingLimiter.acquire();
+
+            final var temporaryChunkPath = Paths.get(chunkFilePath.toString() + ".tmp");
 
             final var commandline =
                     new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
@@ -197,13 +213,34 @@ public class MediaEncoder {
                     .add("-vn")
                     .add("-map", String.format("0:%d", videoFileInfo.getAudioStreamByDashStreamId(streamId).getIndex()))
                     .add(globalAudioEncodingParams.toCommandlineArguments())
-                    .add("-bsf:a", "aac_adtstoasc")
                     .add("-f", "mpegts")
                     .add("-muxdelay", 0)
                     .add("-muxpreload", 0)
-                    .add(chunkFilePath.toString());
+                    .add(temporaryChunkPath.toString());
 
             commandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
+
+            if (chunkIdNumber > 1) {
+                final var trimCommandline =
+                        new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+                                .add("-hide_banner")
+                                .add("-y")
+                                .add("-ss", String.format(Locale.US, "%.15f", overhead))
+                                .add("-i", temporaryChunkPath.toString())
+                                .add("-c:a", "copy")
+                                .add("-vn")
+                                .add("-copyts")
+                                .add("-f", "mpegts")
+                                .add("-muxdelay", 0)
+                                .add("-muxpreload", 0)
+                                .add(chunkFilePath.toString());
+
+                commandlineExecutor.execute(trimCommandline, globalAudioEncodingParams.getEncodingTimeout());
+
+                Files.delete(temporaryChunkPath);
+            } else {
+                Files.move(temporaryChunkPath, chunkFilePath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
@@ -227,7 +264,7 @@ public class MediaEncoder {
 
         var segmentDuration = getSegmentDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration;
-        var timeEnd = chunkIdNumber * segmentDuration - 1e-6;
+        var timeEnd = chunkIdNumber * segmentDuration;
 
         logger.info("generating video {} #{} chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
