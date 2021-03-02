@@ -10,8 +10,6 @@ import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
@@ -75,7 +73,7 @@ public class MediaEncoder {
                 .add("-dash_segment_type", "mp4")
                 .add("-use_template", 1)
                 .add("-use_timeline", 0)
-                .add("-seg_duration", segmentParams.getDuration())
+                .add("-seg_duration", String.format(Locale.US, "%.15f", getSegmentDuration()))
                 .add("-adaptation_sets", getDashAdaptationSets(videoFileInfo))
                 .add("-f", "dash")
                 .add(dashFilePath.toString());
@@ -87,7 +85,7 @@ public class MediaEncoder {
 
             //fix duration and buffer time
             dash = dash.replaceAll("mediaPresentationDuration=\".+\"", String.format("mediaPresentationDuration=\"%s\"", videoFileInfo.getMpdDuration()));
-            dash = dash.replaceAll("minBufferTime=\".+\"", String.format("minBufferTime=\"PT%d.0S\"", segmentParams.getDuration() * 2));
+            dash = dash.replaceAll("minBufferTime=\".+\"", String.format(Locale.US, "minBufferTime=\"PT%.2fS\"", getSegmentDuration() * 2));
 
             //fix path to init and chunk files
             dash = dash.replaceAll("init-", "/video/init/");
@@ -155,6 +153,16 @@ public class MediaEncoder {
         return String.format("%s id=%d,streams=v", audioAdaptationSets, audioStreamsCount);
     }
 
+    /**
+     * Optimal segment duration for AAC frame margin
+     *
+     * @return ...
+     */
+    private double getSegmentDuration() {
+        final var sampleDuration = 1024.0 / globalAudioEncodingParams.getSampleRate();
+        return Math.ceil(segmentParams.getDuration() / sampleDuration) * sampleDuration;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     /**
@@ -168,39 +176,34 @@ public class MediaEncoder {
         var chunkFilePath = fileManipulation.getChunkFilePath(videoFileInfo.getChecksum(), streamId, chunkId);
         var chunkIdNumber = Integer.parseInt(chunkId);
 
-        var segmentDuration = segmentParams.getDuration();
-        var timeStart = (chunkIdNumber - 1) * segmentDuration + 0.021333; //magical constant
-        var timeEnd = chunkIdNumber * segmentDuration + 0.0;
+        var segmentDuration = getSegmentDuration();
+        var timeStart = (chunkIdNumber - 1) * segmentDuration;
+        var timeEnd = chunkIdNumber * segmentDuration - 1e-6;
 
         logger.info("generating audio {} #{}, chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
         try {
             audioTranscodingLimiter.acquire();
 
-            final var convertedChunkFilePath = Paths.get(chunkFilePath.toString() + ".ts");
-
             final var commandline =
                     new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
-                    .add("-ss", String.format(Locale.US, "%f", timeStart))
-                    .add("-to", String.format(Locale.US, "%f", timeEnd))
+                    .add("-ss", String.format(Locale.US, "%.15f", timeStart))
+                    .add("-to", String.format(Locale.US, "%.15f", timeEnd))
                     .add("-i", videoFileInfo.getPath())
                     .add("-copyts")
                     .add("-start_at_zero")
                     .add("-vn")
-                    .add("-af", "aresample=async=1000")
                     .add("-map", String.format("0:%d", videoFileInfo.getAudioStreamByDashStreamId(streamId).getIndex()))
                     .add(globalAudioEncodingParams.toCommandlineArguments())
+                    .add("-bsf:a", "aac_adtstoasc")
                     .add("-f", "mpegts")
-                    .add("-bitexact")
                     .add("-muxdelay", 0)
                     .add("-muxpreload", 0)
-                    .add(convertedChunkFilePath.toString());
+                    .add(chunkFilePath.toString());
 
             commandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
-
-            Files.move(convertedChunkFilePath, chunkFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             logger.warn(String.format("audio segment encoding error %s %s %s", videoFileInfo.getPath(), streamId, chunkId));
             throw new RuntimeException(e);
@@ -222,9 +225,9 @@ public class MediaEncoder {
         var chunkFilePath = fileManipulation.getChunkFilePath(videoFileInfo.getChecksum(), streamId, chunkId);
         var chunkIdNumber = Integer.parseInt(chunkId);
 
-        var segmentDuration = segmentParams.getDuration();
+        var segmentDuration = getSegmentDuration();
         var timeStart = (chunkIdNumber - 1) * segmentDuration;
-        var timeEnd = chunkIdNumber * segmentDuration;
+        var timeEnd = chunkIdNumber * segmentDuration - 1e-6;
 
         logger.info("generating video {} #{} chunk {}", videoFileInfo.getChecksum(), streamId, chunkId);
 
@@ -235,8 +238,8 @@ public class MediaEncoder {
                     new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
-                    .add("-ss", timeStart)
-                    .add("-to", timeEnd)
+                    .add("-ss", String.format(Locale.US, "%.15f", timeStart))
+                    .add("-to", String.format(Locale.US, "%.15f", timeEnd))
                     .add("-i", videoFileInfo.getPath())
                     .add("-copyts")
                     .add("-start_at_zero")
