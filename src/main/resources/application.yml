@@ -26,6 +26,7 @@ global-audio-encoding-params:
   sample-rate: 44100
   encoding-timeout: 5
   concurrent-jobs: 2
+  overhead-duration: 1
 
 segment-params:
   dash-file-name: "dash.mpd"

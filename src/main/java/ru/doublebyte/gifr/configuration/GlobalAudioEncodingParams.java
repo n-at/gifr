@@ -10,6 +10,7 @@ public class GlobalAudioEncodingParams {
     private int sampleRate = 44100;
     private int encodingTimeout = 5;
     private int concurrentJobs = 2;
+    private double overheadDuration = 1;
 
     ///////////////////////////////////////////////////////////////////////////
 
@@ -73,5 +74,13 @@ public class GlobalAudioEncodingParams {
 
     public void setConcurrentJobs(int concurrentJobs) {
         this.concurrentJobs = concurrentJobs;
+    }
+
+    public double getOverheadDuration() {
+        return overheadDuration;
+    }
+
+    public void setOverheadDuration(double overheadDuration) {
+        this.overheadDuration = overheadDuration;
     }
 }
