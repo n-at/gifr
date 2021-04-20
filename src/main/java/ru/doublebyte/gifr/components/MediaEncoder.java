@@ -71,12 +71,12 @@ public class MediaEncoder {
         final var minSegmentDuration = BigDecimal.valueOf(segmentParams.getDuration());
         segmentDuration = minSegmentDuration
                 .divide(avFrameDuration, BigDecimalScale, RoundingMode.HALF_UP)
-                .setScale(0, RoundingMode.UP)
+                .setScale(0, RoundingMode.DOWN)
                 .multiply(avFrameDuration);
 
         audioOverheadDuration = BigDecimal.valueOf(globalAudioEncodingParams.getOverheadDuration())
                 .divide(avFrameDuration, BigDecimalScale, RoundingMode.HALF_UP)
-                .setScale(0, RoundingMode.UP)
+                .setScale(0, RoundingMode.DOWN)
                 .multiply(avFrameDuration);
     }
 
@@ -359,7 +359,7 @@ public class MediaEncoder {
             );
         } else {
             return bigDecimalOutput(
-                    audioOverheadDuration.add(audioFrameDuration)
+                    audioOverheadDuration.add(Eps)
             );
         }
     }
