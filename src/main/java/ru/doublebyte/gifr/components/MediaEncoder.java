@@ -73,8 +73,7 @@ public class MediaEncoder {
     public void generateDashInit(VideoFileInfo videoFileInfo) {
         final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
 
-        final var commandline =
-                new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+        final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
                 .add("-y")
                 .add("-ss", 0)
@@ -188,8 +187,7 @@ public class MediaEncoder {
 
             final var temporaryChunkPath = Paths.get(chunkFilePath.toString() + ".tmp");
 
-            final var commandline =
-                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+            final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-accurate_seek")
@@ -208,20 +206,19 @@ public class MediaEncoder {
 
             commandlineExecutor.execute(commandline, globalAudioEncodingParams.getEncodingTimeout());
 
-            final var trimCommandline =
-                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
-                            .add("-hide_banner")
-                            .add("-y")
-                            .add("-accurate_seek")
-                            .add("-ss", audioSegmentTrimStartTime(chunkIdNumber))
-                            .add("-i", temporaryChunkPath.toString())
-                            .add("-c:a", "copy")
-                            .add("-vn")
-                            .add("-copyts")
-                            .add("-f", "mpegts")
-                            .add("-muxdelay", 0)
-                            .add("-muxpreload", 0)
-                            .add(chunkFilePath.toString());
+            final var trimCommandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+                    .add("-hide_banner")
+                    .add("-y")
+                    .add("-accurate_seek")
+                    .add("-ss", audioSegmentTrimStartTime(chunkIdNumber))
+                    .add("-i", temporaryChunkPath.toString())
+                    .add("-c:a", "copy")
+                    .add("-vn")
+                    .add("-copyts")
+                    .add("-f", "mpegts")
+                    .add("-muxdelay", 0)
+                    .add("-muxpreload", 0)
+                    .add(chunkFilePath.toString());
 
             commandlineExecutor.execute(trimCommandline, globalAudioEncodingParams.getEncodingTimeout());
 
@@ -252,8 +249,7 @@ public class MediaEncoder {
         try {
             videoTranscodingLimiter.acquire();
 
-            final var commandline =
-                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+            final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-accurate_seek")
@@ -295,8 +291,7 @@ public class MediaEncoder {
         logger.info("generating subtitles {} #{}", videoFileInfo.getChecksum(), streamId);
 
         try {
-            final var commandline =
-                    new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+            final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                     .add("-hide_banner")
                     .add("-y")
                     .add("-i", videoFileInfo.getPath())
