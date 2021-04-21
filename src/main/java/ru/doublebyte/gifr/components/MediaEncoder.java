@@ -9,8 +9,6 @@ import ru.doublebyte.gifr.configuration.SegmentParams;
 import ru.doublebyte.gifr.struct.CommandlineArguments;
 import ru.doublebyte.gifr.struct.mediainfo.VideoFileInfo;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Locale;
@@ -23,9 +21,7 @@ public class MediaEncoder {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaEncoder.class);
 
-    private static final int BigDecimalScale = 100;
-    private static final int BigDecimalOutputScale = 20;
-    private static final BigDecimal Eps = BigDecimal.valueOf(1e-6);
+    private static final double Eps = 1e-6;
 
     private final CommandlineExecutor commandlineExecutor;
     private final GlobalVideoEncodingParams globalVideoEncodingParams;
@@ -37,9 +33,9 @@ public class MediaEncoder {
     private final Semaphore videoTranscodingLimiter;
     private final Semaphore audioTranscodingLimiter;
 
-    private final BigDecimal audioFrameDuration;
-    private final BigDecimal segmentDuration;
-    private final BigDecimal audioOverheadDuration;
+    private final double audioFrameDuration;
+    private final double segmentDuration;
+    private final double audioOverheadDuration;
 
     public MediaEncoder(
             CommandlineExecutor commandlineExecutor,
@@ -59,25 +55,12 @@ public class MediaEncoder {
         this.audioTranscodingLimiter = new Semaphore(globalAudioEncodingParams.getConcurrentJobs());
 
         //segment duration constants
-        final var videoFramerate = BigDecimal.valueOf(this.globalVideoEncodingParams.getFramerate());
-        final var videoFrameDuration = (BigDecimal.ONE).divide(videoFramerate, BigDecimalScale, RoundingMode.HALF_UP);
+        audioFrameDuration = 1024.0 / (double) this.globalAudioEncodingParams.getSampleRate(); //one AAC frame contains 1024 samples
 
-        final var audioSampleRate = BigDecimal.valueOf(this.globalAudioEncodingParams.getSampleRate());
-        final var aacFrameSampleCount = BigDecimal.valueOf(1024);
-        audioFrameDuration = aacFrameSampleCount.divide(audioSampleRate, BigDecimalScale, RoundingMode.HALF_UP);
-
-        final var avFrameDuration = videoFrameDuration.multiply(audioFrameDuration);
-
-        final var minSegmentDuration = BigDecimal.valueOf(segmentParams.getDuration());
-        segmentDuration = minSegmentDuration
-                .divide(avFrameDuration, BigDecimalScale, RoundingMode.HALF_UP)
-                .setScale(0, RoundingMode.DOWN)
-                .multiply(avFrameDuration);
-
-        audioOverheadDuration = BigDecimal.valueOf(globalAudioEncodingParams.getOverheadDuration())
-                .divide(avFrameDuration, BigDecimalScale, RoundingMode.HALF_UP)
-                .setScale(0, RoundingMode.DOWN)
-                .multiply(avFrameDuration);
+        final var videoFrameDuration = 1.0 / (double) this.globalVideoEncodingParams.getFramerate();
+        final var avFrameDuration = videoFrameDuration * audioFrameDuration; //segment should contain whole video and audio frames
+        segmentDuration = Math.floor((double) segmentParams.getDuration() / avFrameDuration) * avFrameDuration;
+        audioOverheadDuration = Math.floor(globalAudioEncodingParams.getOverheadDuration() / avFrameDuration) * avFrameDuration;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -105,7 +88,7 @@ public class MediaEncoder {
                 .add("-dash_segment_type", "mp4")
                 .add("-use_template", 1)
                 .add("-use_timeline", 0)
-                .add("-seg_duration", bigDecimalOutput(segmentDuration))
+                .add("-seg_duration", decimalOutput(segmentDuration))
                 .add("-adaptation_sets", getDashAdaptationSets(videoFileInfo))
                 .add("-f", "dash")
                 .add(dashFilePath.toString());
@@ -332,52 +315,36 @@ public class MediaEncoder {
 
     protected String audioSegmentStartTime(int segmentIdx) {
         if (segmentIdx == 1) {
-            return bigDecimalOutput(
-                    BigDecimal.ZERO
-            );
+            return decimalOutput(0);
         } else {
             //to remove aac encoder delay (1024 samples in beginning of stream) add some overhead
             //and later trim it with delay
-            return bigDecimalOutput(
-                    BigDecimal.valueOf(segmentIdx - 1)
-                            .multiply(segmentDuration)
-                            .subtract(audioOverheadDuration)
-            );
+            return decimalOutput((segmentIdx - 1) * segmentDuration - audioOverheadDuration);
         }
     }
 
     protected String audioSegmentEndTime(int segmentIdx) {
-        return bigDecimalOutput(
-                BigDecimal.valueOf(segmentIdx).multiply(segmentDuration).subtract(Eps)
-        );
+        return decimalOutput(segmentIdx * segmentDuration - Eps);
     }
 
     protected String audioSegmentTrimStartTime(int segmentIdx) {
         if (segmentIdx == 1) {
-            return bigDecimalOutput(
-                    audioFrameDuration
-            );
+            return decimalOutput(audioFrameDuration);
         } else {
-            return bigDecimalOutput(
-                    audioOverheadDuration.add(Eps)
-            );
+            return decimalOutput(audioOverheadDuration);
         }
     }
 
     protected String videoSegmentStartTime(int segmentIdx) {
-        return bigDecimalOutput(
-                BigDecimal.valueOf(segmentIdx - 1).multiply(segmentDuration)
-        );
+        return decimalOutput((segmentIdx - 1) * segmentDuration);
     }
 
     protected String videoSegmentEndTime(int segmentIdx) {
-        return bigDecimalOutput(
-                BigDecimal.valueOf(segmentIdx).multiply(segmentDuration).subtract(Eps)
-        );
+        return decimalOutput(segmentIdx * segmentDuration - Eps);
     }
 
-    protected String bigDecimalOutput(BigDecimal value) {
-        return value.setScale(BigDecimalOutputScale, RoundingMode.HALF_UP).toPlainString();
+    protected String decimalOutput(double value) {
+        return String.format(Locale.US, "%.10f", value);
     }
 
 }
