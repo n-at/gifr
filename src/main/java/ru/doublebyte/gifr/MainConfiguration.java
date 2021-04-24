@@ -64,7 +64,7 @@ public class MainConfiguration {
 
     @Bean
     public FileManipulation fileManipulation() {
-        return new FileManipulation(segmentParams());
+        return new FileManipulation(segmentParams(), exportParams());
     }
 
     @Bean
@@ -86,7 +86,7 @@ public class MainConfiguration {
 
     @Bean
     public GifExporter gifExporter() {
-        return new GifExporter(commandlineExecutor(), ffmpegParams(), exportParams());
+        return new GifExporter(commandlineExecutor(), ffmpegParams(), exportParams(), fileManipulation());
     }
 
 }

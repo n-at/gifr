@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.doublebyte.gifr.components.GifExporter;
 import ru.doublebyte.gifr.components.MediaInfo;
+import ru.doublebyte.gifr.struct.response.ExportFramesResponse;
+import ru.doublebyte.gifr.struct.response.Response;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Locale;
@@ -54,7 +56,7 @@ public class ExportController {
             }
 
             var filename = String.format(Locale.US, "%s-%f-%f.gif", videoFileInfo.getChecksum(), positionStart, positionEnd);
-            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
             var stream = gifExporter.export(videoFileInfo, positionStart, positionEnd, framerate, size);
             StreamUtils.copy(stream, response.getOutputStream());
@@ -64,6 +66,41 @@ public class ExportController {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().println("Error: " + e.getMessage());
             response.getWriter().flush();
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Export video fragment into single frames
+     *
+     * @param videoFileId ...
+     * @param positionStart Start position in seconds
+     * @param positionEnd End position in seconds
+     * @param framerate FPS
+     * @param size Frame size
+     * @return ...
+     */
+    @RequestMapping(path = "/export-frames")
+    public Response exportFrames(
+            @RequestParam("id") String videoFileId,
+            @RequestParam("start") Double positionStart,
+            @RequestParam("end") Double positionEnd,
+            @RequestParam("framerate") Integer framerate,
+            @RequestParam("size") Integer size
+    ) {
+        try {
+            var videoFileInfo = mediaInfo.getByVideoFileId(videoFileId);
+            if (videoFileInfo == null) {
+                throw new IllegalStateException("Video file info not found");
+            }
+
+            var exportFrames = gifExporter.exportFrames(videoFileInfo, positionStart, positionEnd, framerate, size);
+
+            return ExportFramesResponse.success(exportFrames.getId(), framerate, exportFrames.getFrames());
+        } catch (Exception e) {
+            logger.info("export frames error", e);
+            return Response.error(e.getMessage());
         }
     }
 

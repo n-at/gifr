@@ -2,6 +2,7 @@ package ru.doublebyte.gifr.components;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.doublebyte.gifr.configuration.ExportParams;
 import ru.doublebyte.gifr.configuration.SegmentParams;
 
 import java.io.IOException;
@@ -15,9 +16,11 @@ public class FileManipulation {
     private static final Logger logger = LoggerFactory.getLogger(FileManipulation.class);
 
     private final SegmentParams segmentParams;
+    private final ExportParams exportParams;
 
-    public FileManipulation(SegmentParams segmentParams) {
+    public FileManipulation(SegmentParams segmentParams, ExportParams exportParams) {
         this.segmentParams = segmentParams;
+        this.exportParams = exportParams;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -28,6 +31,7 @@ public class FileManipulation {
     public void ensureDirectoriesExist() {
         ensureDirectoryExists(segmentParams.getDashOutputPath());
         ensureDirectoryExists(segmentParams.getChunkOutputPath());
+        ensureDirectoryExists(exportParams.getPath());
     }
 
     /**
@@ -161,6 +165,60 @@ public class FileManipulation {
         } catch (Exception e) {
             logger.error("chunk delete error " + chunkFileName, e);
         }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public String getOutputGifFileName(String exportId) {
+        return String.format("%s.gif", exportId);
+    }
+
+    public Path getOutputGifFilePath(String exportId) {
+        return Paths.get(exportParams.getPath(), getOutputGifFileName(exportId));
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    public String getOutputFramesPath(String exportId) {
+        var path = Paths.get(exportParams.getPath(), exportId).toString();
+        ensureDirectoryExists(path);
+        return path;
+    }
+
+    public String getOutputFramesFileNameTemplate(String exportId) {
+        return Paths.get(getOutputFramesPath(exportId), "%010d.png").toString();
+    }
+
+    public int getOutputFrameCount(String exportId) {
+        try {
+            var framesPath = Paths.get(getOutputFramesPath(exportId));
+
+            return (int) Files.walk(framesPath)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> name.matches("^\\d+\\.png$"))
+                    .count();
+        } catch (Exception e) {
+            logger.warn("output frames count error {}: {}", exportId, e.getMessage());
+            return 0;
+        }
+    }
+
+    public Path getOutputFramePath(String exportId, int frameId) {
+        var fileName = String.format("%010d.png", frameId);
+        return Paths.get(getOutputFramesPath(exportId), fileName);
+    }
+
+    public boolean outputFrameExists(String exportId, int frameId) {
+        return Files.exists(getOutputFramePath(exportId, frameId));
+    }
+
+    public Path getOutputFramePreviewPath(String exportId, int frameId) {
+        var fileName = String.format("%010d.preview.jpg", frameId);
+        return Paths.get(getOutputFramesPath(exportId), fileName);
+    }
+
+    public boolean outputFramePreviewExists(String exportId, int frameId) {
+        return Files.exists(getOutputFramePreviewPath(exportId, frameId));
     }
 
     ///////////////////////////////////////////////////////////////////////////
