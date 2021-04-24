@@ -145,4 +145,47 @@ public class GifExporter {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Join exported frames into a gif
+     *
+     * @param exportId ...
+     * @param start Start frame index (inclusive)
+     * @param end End frame index (inclusive)
+     * @param framerate ...
+     * @return ...
+     */
+    public InputStream exportFramesGif(String exportId, int start, int end, int framerate) {
+        if (end < start) {
+            throw new IllegalArgumentException("end should be greater than start");
+        }
+
+        for (var frameIdx = start; frameIdx <= end; frameIdx++) {
+            if (!fileManipulation.outputFrameExists(exportId, frameIdx)) {
+                throw new IllegalArgumentException(String.format("exported frame does not exist exportId=%s frameId=%s", exportId, frameIdx));
+            }
+        }
+
+        var gifExportId = UUID.randomUUID().toString();
+        var gifExportPath = fileManipulation.getOutputGifFilePath(gifExportId);
+
+        var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+                .add("-hide_banner")
+                .add("-y")
+                .add("-framerate", framerate)
+                .add("-start_number", start)
+                .add("-f", "image2")
+                .add("-i", fileManipulation.getOutputFramesFileNameTemplate(exportId))
+                .add("-frames:v", end-start+1)
+                .add("-vf", String.format("fps=%s", framerate))
+                .add(gifExportPath.toString());
+        try {
+            commandlineExecutor.execute(commandline);
+            return Files.newInputStream(gifExportPath);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -13,12 +13,15 @@ import ru.doublebyte.gifr.struct.response.ExportFramesResponse;
 import ru.doublebyte.gifr.struct.response.Response;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 @RestController
 public class ExportController {
 
     private static final Logger logger = LoggerFactory.getLogger(ExportController.class);
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss");
 
     private final MediaInfo mediaInfo;
     private final GifExporter gifExporter;
@@ -102,6 +105,39 @@ public class ExportController {
         } catch (Exception e) {
             logger.info("export frames error", e);
             return Response.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Save exported frames as gif
+     *
+     * @param exportId ...
+     * @param frameStart Start frame index
+     * @param frameEnd End frame index
+     * @param framerate FPS
+     * @param response ...
+     */
+    @RequestMapping(path = "/export-frames/gif", produces = "image/gif")
+    public void exportFramesGif(
+            @RequestParam("id") String exportId,
+            @RequestParam("start") Integer frameStart,
+            @RequestParam("end") Integer frameEnd,
+            @RequestParam("framerate") Integer framerate,
+            HttpServletResponse response
+    ) throws Exception {
+        try (
+                var stream = gifExporter.exportFramesGif(exportId, frameStart, frameEnd, framerate)
+        ) {
+            var time = LocalDateTime.now().format(timeFormatter);
+            var filename = String.format("%s-%s.gif", time, exportId);
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+
+            StreamUtils.copy(stream, response.getOutputStream());
+        } catch (Exception e) {
+            logger.info("export frames gif error", e);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().println("Error: " + e.getMessage());
+            response.getWriter().flush();
         }
     }
 
