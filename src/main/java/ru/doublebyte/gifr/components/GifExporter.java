@@ -123,4 +123,26 @@ public class GifExporter {
         return new ExportFrames(exportId, framesCount);
     }
 
+    public InputStream exportedFrameInputStream(String exportId, int frameId) {
+        if (!fileManipulation.outputFrameExists(exportId, frameId)) {
+            throw new IllegalArgumentException("frame does not exist");
+        }
+        try {
+            return Files.newInputStream(fileManipulation.getOutputFramePath(exportId, frameId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public InputStream exportedFramePreviewInputStream(String exportId, int frameId) {
+        if (!fileManipulation.outputFramePreviewExists(exportId, frameId)) {
+            throw new IllegalArgumentException("frame preview does not exist");
+        }
+        try {
+            return Files.newInputStream(fileManipulation.getOutputFramePreviewPath(exportId, frameId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

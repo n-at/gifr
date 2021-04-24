@@ -3,6 +3,7 @@ package ru.doublebyte.gifr.controllers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -101,6 +102,52 @@ public class ExportController {
         } catch (Exception e) {
             logger.info("export frames error", e);
             return Response.error(e.getMessage());
+        }
+    }
+
+    /**
+     * Get exported frame
+     *
+     * @param exportId ...
+     * @param frameId ...
+     * @param response ...
+     */
+    @RequestMapping(path = "/export-frames/frame/{exportId}/{frameId}", produces = "image/png")
+    public void exportFrameFile(
+            @PathVariable("exportId") String exportId,
+            @PathVariable("frameId") Integer frameId,
+            HttpServletResponse response
+    ) {
+        try (
+                var inputStream = gifExporter.exportedFrameInputStream(exportId, frameId)
+        ) {
+            StreamUtils.copy(inputStream, response.getOutputStream());
+        } catch (Exception e) {
+            logger.error(String.format("export frame error exportId=%s frameId=%d", exportId, frameId), e);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Get exported frame preview
+     *
+     * @param exportId ...
+     * @param frameId ...
+     * @param response ...
+     */
+    @RequestMapping(path = "/export-frames/preview/{exportId}/{frameId}", produces = "image/jpeg")
+    public void exportFramePreview(
+            @PathVariable("exportId") String exportId,
+            @PathVariable("frameId") Integer frameId,
+            HttpServletResponse response
+    ) {
+        try (
+                var inputStream = gifExporter.exportedFramePreviewInputStream(exportId, frameId)
+        ) {
+            StreamUtils.copy(inputStream, response.getOutputStream());
+        } catch (Exception e) {
+            logger.error(String.format("export frame preview error exportId=%s frameId=%d", exportId, frameId), e);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
