@@ -1,6 +1,6 @@
 <template>
     <div v-if="timeVisible" class="card mb-3">
-        <div class="card-body">
+        <div class="video-fragment-export card-body">
             <h5 class="card-title">Save video fragment</h5>
             <div class="row">
                 <div class="col-2">Start:</div>
@@ -126,5 +126,7 @@
 </script>
 
 <style>
-
+    .video-fragment-export {
+        height: 500px;
+    }
 </style>

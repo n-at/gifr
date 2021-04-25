@@ -7,7 +7,7 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <div class="card mb-3">
+        <div class="video-fragment-editor card mb-3">
             <div class="card-body">
                 <h5 class="card-title">Edit video fragment</h5>
 
@@ -163,5 +163,8 @@
 <style>
     .slider-connect {
         background-color: #007bff;
+    }
+    .video-fragment-editor {
+        height: 500px;
     }
 </style>
