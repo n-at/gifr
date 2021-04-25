@@ -177,6 +177,10 @@ public class FileManipulation {
         return Paths.get(exportParams.getPath(), getOutputGifFileName(exportId));
     }
 
+    public Path getOutputGifPalettePath(String exportId) {
+        return Paths.get(exportParams.getPath(), String.format("%s-palette.png", exportId));
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     public String getOutputFramesPath(String exportId) {

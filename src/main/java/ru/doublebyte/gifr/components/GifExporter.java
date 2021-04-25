@@ -47,21 +47,36 @@ public class GifExporter {
      * @return ...
      */
     public InputStream export(VideoFileInfo videoFileInfo, double start, double end, int framerate, int size) {
-        var exportId = UUID.randomUUID().toString();
-        var outputPath = fileManipulation.getOutputGifFilePath(exportId);
+        var gifExportId = UUID.randomUUID().toString();
+        var gifExportPath = fileManipulation.getOutputGifFilePath(gifExportId);
+        var gifExportPalettePath = fileManipulation.getOutputGifPalettePath(gifExportId);
 
-        final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+        var paletteCommandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
                 .add("-y")
                 .add("-ss", String.format(Locale.US, "%f", start))
                 .add("-to", String.format(Locale.US, "%f", end))
                 .add("-i", videoFileInfo.getPath())
-                .add("-vf", String.format("fps=%d,scale=-1:%d:flags=lanczos", framerate, size))
-                .add(outputPath.toString());
+                .add("-vf", "palettegen")
+                .add(gifExportPalettePath.toString());
+        try {
+            commandlineExecutor.execute(paletteCommandline);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
+        var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+                .add("-hide_banner")
+                .add("-y")
+                .add("-ss", String.format(Locale.US, "%f", start))
+                .add("-to", String.format(Locale.US, "%f", end))
+                .add("-i", videoFileInfo.getPath())
+                .add("-i", gifExportPalettePath.toString())
+                .add("-filter_complex", String.format("fps=%d,scale=-1:%d:flags=lanczos,paletteuse", framerate, size))
+                .add(gifExportPath.toString());
         try {
             commandlineExecutor.execute(commandline);
-            return Files.newInputStream(outputPath);
+            return Files.newInputStream(gifExportPath);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -169,6 +184,23 @@ public class GifExporter {
 
         var gifExportId = UUID.randomUUID().toString();
         var gifExportPath = fileManipulation.getOutputGifFilePath(gifExportId);
+        var gifExportPalettePath = fileManipulation.getOutputGifPalettePath(gifExportId);
+
+        var paletteCommandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
+                .add("-hide_banner")
+                .add("-y")
+                .add("-framerate", framerate)
+                .add("-start_number", start)
+                .add("-f", "image2")
+                .add("-i", fileManipulation.getOutputFramesFileNameTemplate(exportId))
+                .add("-frames:v", end-start+1)
+                .add("-vf", "palettegen")
+                .add(gifExportPalettePath.toString());
+        try {
+            commandlineExecutor.execute(paletteCommandline);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
@@ -177,8 +209,10 @@ public class GifExporter {
                 .add("-start_number", start)
                 .add("-f", "image2")
                 .add("-i", fileManipulation.getOutputFramesFileNameTemplate(exportId))
+                .add("-i", gifExportPalettePath.toString())
+                .add("-filter_complex", "paletteuse")
                 .add("-frames:v", end-start+1)
-                .add("-vf", String.format("fps=%s", framerate))
+                .add("-r", framerate)
                 .add(gifExportPath.toString());
         try {
             commandlineExecutor.execute(commandline);
