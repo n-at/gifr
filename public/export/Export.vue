@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-2">Start:</div>
                 <div class="col-10">
-                    <span class="mr-2">{{ timeStart }}</span>
+                    <span class="time-value mr-2">{{ timeStart }}</span>
                     <div v-if="timeStartDefined" class="btn-group btn-group-sm time-controls">
                         <button type="button" class="btn btn-outline-secondary" title="-1 frame" @click="minusStart">
                             <i class="fa fa-minus-square"></i>
@@ -18,7 +18,7 @@
 
                 <div class="col-2">End:</div>
                 <div class="col-10">
-                    <span class="mr-2">{{ timeEnd }}</span>
+                    <span class="time-value mr-2">{{ timeEnd }}</span>
                     <div v-if="timeEndDefined" class="btn-group btn-group-sm time-controls">
                         <button type="button" class="btn btn-outline-secondary" title="-1 frame" @click="minusEnd">
                             <i class="fa fa-minus-square"></i>
@@ -30,7 +30,9 @@
                 </div>
 
                 <div class="col-2">Length:</div>
-                <div class="col-8">{{ duration }}</div>
+                <div class="col-8">
+                    <span class="time-value">{{ duration }}</span>
+                </div>
             </div>
 
             <div v-if="exportVisible">
@@ -176,5 +178,8 @@
         padding: 0.05rem 0.25rem !important;
         font-size: 0.7rem !important;
         line-height: 1.7 !important;
+    }
+    .time-value {
+        font-family: Consolas, Monaco, 'Andale Mono', monospace;
     }
 </style>
