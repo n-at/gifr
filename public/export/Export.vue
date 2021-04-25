@@ -4,13 +4,33 @@
             <h5 class="card-title">Save video fragment</h5>
             <div class="row">
                 <div class="col-2">Start:</div>
-                <div class="col-10">{{ timeStart }}</div>
+                <div class="col-10">
+                    <span class="mr-2">{{ timeStart }}</span>
+                    <div v-if="timeStartDefined" class="btn-group btn-group-sm time-controls">
+                        <button type="button" class="btn btn-outline-secondary" title="-1 frame" @click="minusStart">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" title="+1 frame" @click="plusStart">
+                            <i class="fa fa-plus-square"></i>
+                        </button>
+                    </div>
+                </div>
 
                 <div class="col-2">End:</div>
-                <div class="col-10">{{ timeEnd }}</div>
+                <div class="col-10">
+                    <span class="mr-2">{{ timeEnd }}</span>
+                    <div v-if="timeEndDefined" class="btn-group btn-group-sm time-controls">
+                        <button type="button" class="btn btn-outline-secondary" title="-1 frame" @click="minusEnd">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" title="+1 frame" @click="plusEnd">
+                            <i class="fa fa-plus-square"></i>
+                        </button>
+                    </div>
+                </div>
 
                 <div class="col-2">Length:</div>
-                <div class="col-10">{{ duration }}</div>
+                <div class="col-8">{{ duration }}</div>
             </div>
 
             <div v-if="exportVisible">
@@ -69,25 +89,29 @@
 
         computed: {
             timeVisible() {
-                return this.$store.state.position.start !== null ||
-                       this.$store.state.position.end !== null;
+                return this.timeStartDefined || this.timeEndDefined;
             },
 
             exportVisible() {
-                return this.$store.state.position.start !== null &&
-                       this.$store.state.position.end !== null;
+                return this.timeStartDefined && this.timeEndDefined;
             },
 
+            timeStartDefined() {
+                return this.$store.state.position.start !== null;
+            },
             timeStart() {
-                if (this.$store.state.position.start !== null) {
+                if (this.timeStartDefined) {
                     return TimeUtils.formatTime(this.$store.state.position.start);
                 } else {
                     return 'not defined';
                 }
             },
 
+            timeEndDefined() {
+                return this.$store.state.position.end !== null;
+            },
             timeEnd() {
-                if (this.$store.state.position.end !== null) {
+                if (this.timeEndDefined) {
                     return TimeUtils.formatTime(this.$store.state.position.end);
                 } else {
                     return 'not defined';
@@ -121,6 +145,25 @@
                 this.$store.commit(Constants.MUTATION_POSITION_START, null);
                 this.$store.commit(Constants.MUTATION_POSITION_END, null);
             },
+
+            plusStart() {
+                const duration = this.$store.state.videoFileInfo.data.duration;
+                const start = this.$store.state.position.start;
+                this.$store.commit(Constants.MUTATION_POSITION_START, Math.min(duration, start + 1/25.0));
+            },
+            minusStart() {
+                const start = this.$store.state.position.start;
+                this.$store.commit(Constants.MUTATION_POSITION_START, Math.max(0.0, start - 1/25.0));
+            },
+            plusEnd() {
+                const duration = this.$store.state.videoFileInfo.data.duration;
+                const end = this.$store.state.position.end;
+                this.$store.commit(Constants.MUTATION_POSITION_END, Math.min(duration, end + 1/25.0));
+            },
+            minusEnd() {
+                const end = this.$store.state.position.end;
+                this.$store.commit(Constants.MUTATION_POSITION_END, Math.max(0.0, end - 1/25.0));
+            },
         },
     };
 </script>
@@ -128,5 +171,10 @@
 <style>
     .video-fragment-export {
         height: 500px;
+    }
+    .time-controls .btn {
+        padding: 0.05rem 0.25rem !important;
+        font-size: 0.7rem !important;
+        line-height: 1.7 !important;
     }
 </style>
