@@ -21,4 +21,9 @@ export default {
 
     MUTATION_POSITION_START: 'positionStart',
     MUTATION_POSITION_END: 'positionEnd',
+
+    MUTATION_EDITOR_EMPTY: 'fragmentEditorEmpty',
+    MUTATION_EDITOR_LOADING: 'fragmentEditorLoading',
+    MUTATION_EDITOR_ERROR: 'fragmentEditorError',
+    MUTATION_EDITOR_PRESENT: 'fragmentEditorPresent',
 };

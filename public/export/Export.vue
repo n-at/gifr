@@ -42,8 +42,11 @@
                     <button type="button" class="btn btn-outline-secondary mr-2" @click="cancel">
                         Cancel
                     </button>
-                    <button type="button" class="btn btn-outline-primary" @click="exportFile">
-                        <i class="fa fa-download"></i> Save fragment
+                    <button type="button" class="btn btn-outline-primary mr-2" @click="save">
+                        <i class="fa fa-download"></i> Save gif
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" @click="edit">
+                        <i class="fa fa-arrow-right"></i> Edit
                     </button>
                 </div>
             </div>
@@ -54,6 +57,7 @@
 <script>
     import TimeUtils from '../utils/time'
     import Constants from '../store/constants'
+    import Api from '../store/api'
 
     export default {
         data() {
@@ -101,12 +105,16 @@
         },
 
         methods: {
-            exportFile() {
+            save() {
                 const videoFileId = this.$store.state.videoPlayer.id;
                 const timeStart = this.$store.state.position.start;
                 const timeEnd = this.$store.state.position.end;
 
                 window.open(`/export?id=${videoFileId}&start=${timeStart}&end=${timeEnd}&framerate=${this.framerate}&size=${this.size}` );
+            },
+
+            edit() {
+                Api.exportVideoFragment(this.framerate, this.size);
             },
 
             cancel() {

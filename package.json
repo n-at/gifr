@@ -22,6 +22,7 @@
   "dependencies": {
     "@forevolve/bootstrap-dark": "1.0.0",
     "@fortawesome/fontawesome-free": "5.15.3",
+    "@vueform/slider": "1.0.5",
     "core-js": "3.8.3",
     "jquery": "3.5.1",
     "popper.js": "1.16.1",
@@ -30,7 +31,6 @@
     "videojs-contrib-quality-levels": "2.0.9",
     "videojs-hls-quality-selector": "1.1.4",
     "vue": "3.0.11",
-    "vue-slider-component": "4.0.0-beta.3",
     "vuex": "4.0.0"
   },
   "devDependencies": {

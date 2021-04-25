@@ -25,6 +25,13 @@ export default createStore({
                 start: null,
                 end: null,
             },
+            editor: {
+                state: Constants.STATE_EMPTY,
+                error: null,
+                id: null,
+                framerate: null,
+                frames: null,
+            }
         }
     },
 
@@ -145,6 +152,44 @@ export default createStore({
         },
         [Constants.MUTATION_POSITION_END] (state, position) {
             state.position.end = position;
+        },
+
+        //Editor
+        [Constants.MUTATION_EDITOR_EMPTY] (state) {
+            state.editor = {
+                state: Constants.STATE_EMPTY,
+                error: null,
+                id: null,
+                framerate: null,
+                frames: null,
+            };
+        },
+        [Constants.MUTATION_EDITOR_LOADING] (state) {
+            state.editor = {
+                state: Constants.STATE_LOADING,
+                error: null,
+                id: null,
+                framerate: null,
+                frames: null,
+            };
+        },
+        [Constants.MUTATION_EDITOR_ERROR] (state, message) {
+            state.editor = {
+                state: Constants.STATE_ERROR,
+                error: message,
+                id: null,
+                framerate: null,
+                frames: null,
+            };
+        },
+        [Constants.MUTATION_EDITOR_PRESENT] (state, data) {
+            state.editor = {
+                state: Constants.STATE_PRESENT,
+                error: null,
+                id: data.id,
+                framerate: parseInt(data.framerate),
+                frames: parseInt(data.frames),
+            };
         },
     },
 

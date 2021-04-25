@@ -14,7 +14,7 @@
             <Export/>
         </div>
         <div class="col-6">
-
+            <Editor/>
         </div>
     </div>
 </template>
@@ -25,6 +25,7 @@
     import VideoFileInfo from "./video-file-info/VideoFileInfo.vue";
     import VideoPlayer from "./player/VideoPlayer.vue";
     import Export from './export/Export.vue';
+    import Editor from './editor/Editor.vue';
 
     export default {
         components: {
@@ -33,6 +34,7 @@
             VideoFileInfo,
             VideoPlayer,
             Export,
+            Editor,
         },
     };
 </script>

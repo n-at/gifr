@@ -54,4 +54,52 @@ export default {
             Store.commit(Constants.MUTATION_VFI_PRESENT, response.info);
         });
     },
+
+    /**
+     * Export selected video fragment
+     *
+     * @param framerate
+     * @param size
+     */
+    exportVideoFragment(framerate, size) {
+        Store.commit(Constants.MUTATION_EDITOR_LOADING);
+
+        const videoFileId = Store.state.videoPlayer.id;
+        const start = Store.state.position.start;
+        const end = Store.state.position.end;
+
+        if (!videoFileId) {
+            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video file not opened');
+            return;
+        }
+        if (start === null) {
+            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment start not defined');
+            return;
+        }
+        if (end === null) {
+            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment end not defined');
+            return;
+        }
+
+        const params = {
+            id: videoFileId,
+            start,
+            end,
+            framerate,
+            size,
+        };
+
+        $.post('/export-frames', params, response => {
+            if (!response) {
+                Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment save failed');
+                return;
+            }
+            if (!response.success) {
+                Store.commit(Constants.MUTATION_EDITOR_ERROR, response.message);
+                return;
+            }
+
+            Store.commit(Constants.MUTATION_EDITOR_PRESENT, response);
+        });
+    },
 };
