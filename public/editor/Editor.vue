@@ -7,19 +7,19 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <div class="card">
+        <div class="card mb-3">
             <div class="card-body">
                 <h5 class="card-title">Edit video fragment</h5>
 
-                <div>TODO: animation</div>
+                <div class="text-center">
+                    <template v-for="(preview, idx) in previews">
+                        <img :id="frameId(idx)" :src="preview" :alt="preview" class="d-none">
+                    </template>
+                </div>
 
-                <slider v-model="range"
-                        :min="framesMin"
-                        :max="framesMax"
-                        :step="1"
-                        :tooltips="false"
-                        class="mt-2"
-                />
+                <slider v-model="range" :tooltips="false" class="mt-3"
+                        :min="framesMin" :max="framesMax" :step="1" />
+
                 <hr>
                 <div class="form-group">
                     <label for="export-frame-rate">Frame rate</label>
@@ -59,6 +59,8 @@
         data() {
             return {
                 range: [0, 0],
+                currentFrame: 0,
+                timeoutId: null,
             };
         },
 
@@ -83,7 +85,18 @@
                 return 0;
             },
             framesMax() {
-                return this.$store.state.editor.frames ?? 1;
+                return this.$store.state.editor.frames-1 ?? 1;
+            },
+
+            previews() {
+                if (!this.exportId || !this.framesMax) {
+                    return [];
+                }
+                const previews = [];
+                for (let frameIdx = 0; frameIdx <= this.framesMax; frameIdx++) {
+                    previews.push(`/export-frames/preview/${this.exportId}/${frameIdx}`);
+                }
+                return previews;
             },
         },
 
@@ -108,6 +121,40 @@
             resetRange() {
                 this.range = [this.framesMin, this.framesMax];
             },
+
+            nextFrame() {
+                let nextFrameIdx = this.currentFrame + 1;
+                if (nextFrameIdx > this.range[1]) {
+                    nextFrameIdx = this.range[0];
+                }
+
+                const nextFrameId = this.frameId(nextFrameIdx);
+                const nextFrame = document.getElementById(nextFrameId);
+                if (nextFrame) {
+                    nextFrame.classList = '';
+                }
+
+                const currentFrameId = this.frameId(this.currentFrame);
+                const currentFrame = document.getElementById(currentFrameId);
+                if (currentFrame) {
+                    currentFrame.classList = 'd-none';
+                }
+
+                const timeout = 1000.0 / this.$store.state.editor.framerate;
+
+                this.currentFrame = nextFrameIdx;
+                this.timeoutId = setTimeout(() => this.nextFrame(), timeout);
+            },
+            frameId(frameIdx) {
+                return `preview-${this.exportId}-${frameIdx}`;
+            },
+        },
+
+        mounted() {
+            this.nextFrame();
+        },
+        beforeUnmount() {
+            clearTimeout(this.timeoutId);
         },
     };
 </script>
