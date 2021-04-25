@@ -12,9 +12,7 @@
                 <h5 class="card-title">Edit video fragment</h5>
 
                 <div class="text-center">
-                    <template v-for="(preview, idx) in previews">
-                        <img :id="frameId(idx)" :src="preview" :alt="preview" class="d-none">
-                    </template>
+                    <canvas ref="editorPreview" @click="playPreviewToggle"></canvas>
                 </div>
 
                 <slider v-model="range" :tooltips="false" class="mt-3"
@@ -43,13 +41,12 @@
 </template>
 
 <script>
-    import Slider from '@vueform/slider'
+import Slider from '@vueform/slider'
+import Constants from '../store/constants'
+import LoadingState from '../common/LoadingState.vue'
+import ErrorState from '../common/ErrorState.vue'
 
-    import Constants from '../store/constants'
-    import LoadingState from '../common/LoadingState.vue'
-    import ErrorState from '../common/ErrorState.vue'
-
-    export default {
+export default {
         components: {
             LoadingState,
             ErrorState,
@@ -59,8 +56,8 @@
         data() {
             return {
                 range: [0, 0],
-                currentFrame: 0,
-                timeoutId: null,
+                currentFrameIdx: 0,
+                playPreview: true,
             };
         },
 
@@ -81,6 +78,9 @@
             exportId() {
                 return this.$store.state.editor.id;
             },
+            framerate() {
+                return this.$store.state.editor.framerate;
+            },
             framesMin() {
                 return 0;
             },
@@ -88,21 +88,31 @@
                 return this.$store.state.editor.frames-1 ?? 1;
             },
 
-            previews() {
+            previewFrames() {
                 if (!this.exportId || !this.framesMax) {
-                    return [];
+                    return {};
                 }
-                const previews = [];
-                for (let frameIdx = 0; frameIdx <= this.framesMax; frameIdx++) {
-                    previews.push(`/export-frames/preview/${this.exportId}/${frameIdx}`);
+                const frames = {};
+                for (let frameIdx = this.framesMin; frameIdx <= this.framesMax; frameIdx++) {
+                    const image = new Image();
+                    image.onload = () => frames[frameIdx] = image;
+                    image.src = `/export-frames/preview/${this.exportId}/${frameIdx}`;
                 }
-                return previews;
+                return frames;
             },
         },
 
         watch: {
-            exportId() {
-                setTimeout(() => this.resetRange());
+            exportId(value) {
+                this.playPreview = !!value;
+                this.currentFrameIdx = 0;
+                this.nextPreviewFrame();
+            },
+            framesMin(value) {
+                this.range[0] = value;
+            },
+            framesMax(value) {
+                this.range[1] = value;
             },
         },
 
@@ -111,50 +121,33 @@
                 this.$store.commit(Constants.MUTATION_EDITOR_EMPTY);
             },
             save() {
-                const exportId = this.exportId;
-                const framerate = this.$store.state.editor.framerate;
                 const start = this.range[0];
                 const end = this.range[1];
-
-                window.open(`/export-frames/gif?id=${exportId}&framerate=${framerate}&start=${start}&end=${end}`);
-            },
-            resetRange() {
-                this.range = [this.framesMin, this.framesMax];
+                window.open(`/export-frames/gif?id=${this.exportId}&framerate=${this.framerate}&start=${start}&end=${end}`);
             },
 
-            nextFrame() {
-                let nextFrameIdx = this.currentFrame + 1;
+            nextPreviewFrame() {
+                let nextFrameIdx = this.currentFrameIdx + 1;
                 if (nextFrameIdx > this.range[1]) {
                     nextFrameIdx = this.range[0];
                 }
+                this.currentFrameIdx = nextFrameIdx;
 
-                const nextFrameId = this.frameId(nextFrameIdx);
-                const nextFrame = document.getElementById(nextFrameId);
-                if (nextFrame) {
-                    nextFrame.classList = '';
+                if (this.previewFrames[nextFrameIdx]) {
+                    const frame = this.previewFrames[nextFrameIdx];
+                    const canvas = this.$refs.editorPreview;
+                    canvas.width = frame.width;
+                    canvas.height = frame.height;
+                    canvas.getContext('2d').drawImage(frame, 0, 0);
                 }
-
-                const currentFrameId = this.frameId(this.currentFrame);
-                const currentFrame = document.getElementById(currentFrameId);
-                if (currentFrame) {
-                    currentFrame.classList = 'd-none';
+                if (this.playPreview) {
+                    setTimeout(() => this.nextPreviewFrame(), 1000.0 / this.framerate);
                 }
-
-                const timeout = 1000.0 / this.$store.state.editor.framerate;
-
-                this.currentFrame = nextFrameIdx;
-                this.timeoutId = setTimeout(() => this.nextFrame(), timeout);
             },
-            frameId(frameIdx) {
-                return `preview-${this.exportId}-${frameIdx}`;
+            playPreviewToggle() {
+                this.playPreview = !this.playPreview;
+                this.nextPreviewFrame();
             },
-        },
-
-        mounted() {
-            this.nextFrame();
-        },
-        beforeUnmount() {
-            clearTimeout(this.timeoutId);
         },
     };
 </script>
