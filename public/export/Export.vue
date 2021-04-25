@@ -1,7 +1,7 @@
 <template>
     <div v-if="timeVisible" class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">gif settings</h5>
+            <h5 class="card-title">Save video fragment</h5>
             <div class="row">
                 <div class="col-2">Start:</div>
                 <div class="col-10">{{ timeStart }}</div>
@@ -38,10 +38,12 @@
                         <option value="1080">1080p</option>
                     </select>
                 </div>
-                <div>
-                    <button type="button" class="btn btn-outline-primary"
-                            @click="exportFile">
-                        <i class="fa fa-download"></i> Save gif
+                <div class="text-right">
+                    <button type="button" class="btn btn-outline-secondary mr-2" @click="cancel">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" @click="exportFile">
+                        <i class="fa fa-download"></i> Save fragment
                     </button>
                 </div>
             </div>
@@ -51,6 +53,7 @@
 
 <script>
     import TimeUtils from '../utils/time'
+    import Constants from '../store/constants'
 
     export default {
         data() {
@@ -104,6 +107,11 @@
                 const timeEnd = this.$store.state.position.end;
 
                 window.open(`/export?id=${videoFileId}&start=${timeStart}&end=${timeEnd}&framerate=${this.framerate}&size=${this.size}` );
+            },
+
+            cancel() {
+                this.$store.commit(Constants.MUTATION_POSITION_START, null);
+                this.$store.commit(Constants.MUTATION_POSITION_END, null);
             },
         },
     };
