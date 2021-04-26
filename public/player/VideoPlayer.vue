@@ -1,5 +1,7 @@
 <template>
-    <template v-if="isEmpty"></template>
+    <template v-if="isEmpty">
+        <VideoPlayerEmpty/>
+    </template>
     <template v-else-if="isLoading">
         <LoadingState/>
     </template>
@@ -16,6 +18,7 @@
 
 <script>
     import Constants from '../store/constants'
+    import VideoPlayerEmpty from "./VideoPlayerEmpty.vue"
     import LoadingState from "../common/LoadingState.vue"
     import ErrorState from "../common/ErrorState.vue"
     import VideoJS from "./VideoJS.vue"
@@ -25,6 +28,7 @@
             LoadingState,
             ErrorState,
             VideoJS,
+            VideoPlayerEmpty,
         },
 
         computed: {
