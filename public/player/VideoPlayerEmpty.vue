@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center video-player-empty">
+    <div class="text-center video-player-empty mb-3">
         <div class="mb-3">
             <i class="fa fa-file-video"></i>
         </div>

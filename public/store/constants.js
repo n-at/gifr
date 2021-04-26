@@ -26,4 +26,6 @@ export default {
     MUTATION_EDITOR_LOADING: 'fragmentEditorLoading',
     MUTATION_EDITOR_ERROR: 'fragmentEditorError',
     MUTATION_EDITOR_PRESENT: 'fragmentEditorPresent',
+
+    MUTATION_OPEN_FILE_PANEL: 'openFilePanel',
 };

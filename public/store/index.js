@@ -19,6 +19,7 @@ export default createStore({
                 state: Constants.STATE_EMPTY,
                 error: null,
                 id: null,
+                path: null,
                 subtitles: [],
             },
             position: {
@@ -31,7 +32,8 @@ export default createStore({
                 id: null,
                 framerate: null,
                 frames: null,
-            }
+            },
+            openFilePanel: true,
         }
     },
 
@@ -102,6 +104,7 @@ export default createStore({
                 state: Constants.STATE_EMPTY,
                 error: null,
                 id: null,
+                path: null,
                 subtitles: [],
             };
             state.position = {
@@ -114,6 +117,7 @@ export default createStore({
                 state: Constants.STATE_LOADING,
                 error: null,
                 id: null,
+                path: null,
                 subtitles: [],
             };
             state.position = {
@@ -126,6 +130,7 @@ export default createStore({
                 state: Constants.STATE_ERROR,
                 error: message,
                 id: null,
+                path: null,
                 subtitles: [],
             };
             state.position = {
@@ -138,6 +143,7 @@ export default createStore({
                 state: Constants.STATE_PRESENT,
                 error: null,
                 id: payload.id,
+                path: payload.path,
                 subtitles: payload.subtitles,
             };
             state.position = {
@@ -190,6 +196,11 @@ export default createStore({
                 framerate: parseInt(data.framerate),
                 frames: parseInt(data.frames),
             };
+        },
+
+        //open file panel
+        [Constants.MUTATION_OPEN_FILE_PANEL] (state, value) {
+            state.openFilePanel = !!value;
         },
     },
 

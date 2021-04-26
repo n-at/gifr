@@ -3,7 +3,7 @@ gifr - gif recorder
 
 Streaming video player. It can play any local video file in web browser (and record gifs from it).
 
-![Screenshot](public/img/screenshot.jpg)
+![Screenshot](public/img/screenshot.png)
 
 Video © Blender Foundation | cloud.blender.org/spring
 

@@ -10,9 +10,8 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <div class="file-system-navigator card">
+        <div class="file-system-navigator card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Choose a video file</h5>
                 <div class="file-system-navigator-path mb-3">
                     <span class="text-secondary">
                         <button type="button" class="btn btn-sm btn-outline-secondary mr-1"
@@ -22,7 +21,7 @@
                         </button>
                     </span>
                 </div>
-                <div class="file-system-navigator-list list-group">
+                <div class="file-system-navigator-list list-group list-group-flush">
                     <button type="button" class="list-group-item list-group-item-action" :class="isSelectedEntry(entry) ? 'active' : ''"
                             v-for="entry in entries" :key="entry.name" @click="open(entry)">
                         <i class="fa fa-folder" v-if="entry.type === 'Directory'"></i>
@@ -122,8 +121,5 @@
 </script>
 
 <style>
-    .file-system-navigator-list {
-        overflow-y: auto;
-        max-height: 300px;
-    }
+
 </style>

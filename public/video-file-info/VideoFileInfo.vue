@@ -10,25 +10,22 @@
         <div class="alert alert-secondary" v-if="notAVideoFile">
             Not a video file
         </div>
-        <div v-else class="card">
-            <div class="card-body">
-                <h5 class="card-title">Video file info</h5>
-                <div class="row mb-2">
-                    <div class="col-9">
-                        <div class="video-file-path">{{ fileInfo.path }}</div>
-                    </div>
-                    <div class="col-3 text-right">
-                        <button type="button" class="btn btn-outline-primary" @click="open">
-                            <i class="fa fa-play"></i> Open
-                        </button>
-                    </div>
+        <div v-else class="mb-3">
+            <div class="row mb-2">
+                <div class="col-9">
+                    <div class="video-file-path">{{ fileInfo.path }}</div>
                 </div>
+                <div class="col-3 text-right">
+                    <button type="button" class="btn btn-outline-primary" @click="open">
+                        <i class="fa fa-play"></i> Open
+                    </button>
+                </div>
+            </div>
 
-                <div class="video-file-info-streams">
-                    <VideoStreams :info="fileInfo.video" :duration="fileInfo.duration"/>
-                    <AudioStreams v-if="fileInfo.audio.length" :info="fileInfo.audio"/>
-                    <SubtitlesStreams v-if="fileInfo.subtitles.length" :info="fileInfo.subtitles"/>
-                </div>
+            <div class="video-file-info-streams">
+                <VideoStreams :info="fileInfo.video" :duration="fileInfo.duration"/>
+                <AudioStreams v-if="fileInfo.audio.length" :info="fileInfo.audio"/>
+                <SubtitlesStreams v-if="fileInfo.subtitles.length" :info="fileInfo.subtitles"/>
             </div>
         </div>
     </template>
@@ -88,12 +85,14 @@
 
         methods: {
             open() {
+                this.$store.commit(Constants.MUTATION_OPEN_FILE_PANEL, false);
                 this.$store.commit(Constants.MUTATION_VP_LOADING);
 
                 setTimeout(() => {
                     const videoFileId = this.$store.state.videoFileInfo.data.id;
                     this.$store.commit(Constants.MUTATION_VP_PRESENT, {
                         id: videoFileId,
+                        path: this.fileInfo.path,
                         subtitles: this.$store.state.videoFileInfo.data.subtitles,
                     });
                 });
@@ -103,9 +102,5 @@
 </script>
 
 <style>
-    .video-file-info-streams {
-        overflow-y: auto;
-        overflow-x: hidden;
-        max-height: 300px;
-    }
+
 </style>
