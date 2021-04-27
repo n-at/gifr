@@ -125,7 +125,7 @@ public class GifExporter {
                     .add("-y")
                     .add("-i", framePath.toString())
                     .add("-qscale:v", exportParams.getFramesPreviewQuality())
-                    .add("-vf", String.format("scale=-1:%d", exportParams.getFramesPreviewSize()))
+                    .add("-vf", String.format("scale=%d:-1", exportParams.getFramesPreviewSize()))
                     .add(framePreviewPath.toString());
             try {
                 commandlineExecutor.execute(convertCommandline);

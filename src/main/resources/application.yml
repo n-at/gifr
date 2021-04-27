@@ -40,4 +40,4 @@ export-params:
   path: "export"
   frames-compression-level: 100
   frames-preview-quality: 12
-  frames-preview-size: 240
+  frames-preview-size: 320

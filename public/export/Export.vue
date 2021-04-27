@@ -1,7 +1,12 @@
 <template>
     <div v-if="timeVisible" class="card mb-3">
         <div class="video-fragment-export card-body">
-            <h5 class="card-title">Save video fragment</h5>
+            <h5 class="card-title">
+                Record gif
+                <button type="button" class="close" aria-label="Cancel" @click="cancel">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </h5>
             <div class="row">
                 <div class="col-2">Start:</div>
                 <div class="col-10">
@@ -61,9 +66,6 @@
                     </select>
                 </div>
                 <div class="text-right">
-                    <button type="button" class="btn btn-outline-secondary mr-2" @click="cancel">
-                        Cancel
-                    </button>
                     <button type="button" class="btn btn-outline-primary mr-2" @click="save">
                         <i class="fa fa-download"></i> Save gif
                     </button>

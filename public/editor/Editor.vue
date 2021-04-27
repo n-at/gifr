@@ -9,7 +9,12 @@
     <template v-else>
         <div class="video-fragment-editor card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Edit video fragment</h5>
+                <h5 class="card-title">
+                    Edit gif
+                    <button type="button" class="close" aria-label="Cancel" @click="cancel">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </h5>
 
                 <div class="text-center">
                     <canvas ref="editorPreview" @click="playPreviewToggle"></canvas>
@@ -30,7 +35,6 @@
                     </select>
                 </div>
                 <div class="text-right">
-                    <button type="button" class="btn btn-outline-secondary mr-2" @click="cancel">Cancel</button>
                     <button type="button" class="btn btn-outline-primary" @click="save">
                         <i class="fa fa-download"></i> Save gif
                     </button>

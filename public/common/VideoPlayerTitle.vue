@@ -1,7 +1,7 @@
 <template>
-    <div class="d-flex align-items-start mb-3">
+    <div class="d-flex align-items-center mb-3">
         <button type="button" class="btn btn-lg btn-outline-secondary title-button-open" title="Open video file" @click="open">
-            <i class="fa fa-folder-open"></i>
+            <i class="fa fa-bars"></i>
         </button>
 
         <div class="d-inline-block ml-3">

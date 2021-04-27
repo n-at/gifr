@@ -1,6 +1,6 @@
 <template>
-    <div class="d-flex align-items-start mb-3">
-        <button type="button" class="btn btn-lg btn-outline-secondary title-button-close" title="Close" @click="close">
+    <div class="d-flex align-items-center mb-3">
+        <button type="button" class="btn btn-lg btn-outline-secondary title-button-close" title="Return to player" @click="close">
             <i class="fa fa-times"></i>
         </button>
         <div class="d-inline-block ml-3">
@@ -25,5 +25,6 @@
     .title-button-close {
         width: 58px;
         height: 58px;
+        font-size: 1.5rem !important;
     }
 </style>
