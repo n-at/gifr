@@ -7,8 +7,8 @@
         <ErrorState :message="errorMessage"/>
     </template>
     <template v-else>
-        <div class="video-fragment-editor card mb-3">
-            <div class="card-body">
+        <div class="card mb-3">
+            <div class="video-fragment-editor card-body">
                 <h5 class="card-title">
                     Edit gif
                     <button type="button" class="close" aria-label="Cancel" @click="cancel">
@@ -34,11 +34,11 @@
                         <option value="10">10 fps</option>
                     </select>
                 </div>
-                <div class="text-right">
-                    <button type="button" class="btn btn-outline-primary" @click="save">
-                        <i class="fa fa-download"></i> Save gif
-                    </button>
-                </div>
+            </div>
+            <div class="card-footer text-right">
+                <button type="button" class="btn btn-outline-primary" @click="save">
+                    <i class="fa fa-download"></i> Save gif
+                </button>
             </div>
         </div>
     </template>
@@ -162,6 +162,6 @@ export default {
         background-color: #007bff;
     }
     .video-fragment-editor {
-        height: 500px;
+        min-height: 430px !important;
     }
 </style>

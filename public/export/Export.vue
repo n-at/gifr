@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div v-if="exportVisible">
+            <template v-if="exportVisible">
                 <hr>
                 <div class="form-group">
                     <label for="export-frame-rate">Frame rate</label>
@@ -65,15 +65,15 @@
                         <option value="1080">1080p</option>
                     </select>
                 </div>
-                <div class="text-right">
-                    <button type="button" class="btn btn-outline-primary mr-2" @click="save">
-                        <i class="fa fa-download"></i> Save gif
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" @click="edit">
-                        <i class="fa fa-arrow-right"></i> Edit
-                    </button>
-                </div>
-            </div>
+            </template>
+        </div>
+        <div v-if="exportVisible" class="card-footer text-right">
+            <button type="button" class="btn btn-outline-primary mr-2" @click="save">
+                <i class="fa fa-download"></i> Save gif
+            </button>
+            <button type="button" class="btn btn-outline-primary" @click="edit">
+                <i class="fa fa-arrow-right"></i> Edit
+            </button>
         </div>
     </div>
 </template>
@@ -174,7 +174,7 @@
 
 <style>
     .video-fragment-export {
-        height: 500px;
+        min-height: 430px !important;
     }
     .time-controls .btn {
         padding: 0.05rem 0.25rem !important;

@@ -12,7 +12,7 @@
     <template v-else>
         <div class="file-system-navigator card mb-3">
             <div class="card-body">
-                <div class="file-system-navigator-path mb-3">
+                <div class="file-system-navigator-path">
                     <span class="text-secondary">
                         <button type="button" class="btn btn-sm btn-outline-secondary mr-1"
                                 v-for="entry in currentPathEntries"
@@ -21,18 +21,17 @@
                         </button>
                     </span>
                 </div>
-                <div class="file-system-navigator-list list-group list-group-flush">
-                    <button type="button" class="list-group-item list-group-item-action" :class="isSelectedEntry(entry) ? 'active' : ''"
-                            v-for="entry in entries" :key="entry.name" @click="open(entry)">
-                        <i class="fa fa-folder" v-if="entry.type === 'Directory'"></i>
-                        <i class="fa fa-file" v-if="entry.type === 'File'"></i>
-                        {{ entry.name }}
-                    </button>
-                </div>
+            </div>
+            <div class="file-system-navigator-list list-group list-group-flush">
+                <button type="button" class="list-group-item list-group-item-action" :class="isSelectedEntry(entry) ? 'active' : ''"
+                        v-for="entry in entries" :key="entry.name" @click="open(entry)">
+                    <i class="fa fa-folder" v-if="entry.type === 'Directory'"></i>
+                    <i class="fa fa-file" v-if="entry.type === 'File'"></i>
+                    {{ entry.name }}
+                </button>
             </div>
         </div>
     </template>
-
 </template>
 
 <script>
