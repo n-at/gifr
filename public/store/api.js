@@ -11,20 +11,20 @@ export default {
      * @param path
      */
     loadFileList(path) {
-        Store.commit(Constants.MUTATION_FSN_LOADING);
+        Store.commit(Constants.Mutation.FileSystemNavigator.Loading);
 
         $.post('/file-system-navigator/list', {path: path}, response => {
             if (!response) {
-                Store.commit(Constants.MUTATION_FSN_ERROR, 'File list request failed');
+                Store.commit(Constants.Mutation.FileSystemNavigator.Error, 'File list request failed');
                 return;
             }
 
             if (!response.success) {
-                Store.commit(Constants.MUTATION_FSN_ERROR, response.message);
+                Store.commit(Constants.Mutation.FileSystemNavigator.Error, response.message);
                 return;
             }
 
-            Store.commit(Constants.MUTATION_FSN_PRESENT, {
+            Store.commit(Constants.Mutation.FileSystemNavigator.Present, {
                 currentPath: response.currentPath,
                 previousPath: response.previousPath,
                 entries: response.entries,
@@ -38,20 +38,20 @@ export default {
      * @param path
      */
     videoFileInfo(path) {
-        Store.commit(Constants.MUTATION_VFI_LOADING);
+        Store.commit(Constants.Mutation.VideoFileInfo.Loading);
 
         $.post('/video-info', {path: path}, response => {
             if (!response) {
-                Store.commit(Constants.MUTATION_VFI_ERROR, 'Video file info request failed');
+                Store.commit(Constants.Mutation.VideoFileInfo.Error, 'Video file info request failed');
                 return;
             }
 
             if (!response.success) {
-                Store.commit(Constants.MUTATION_VFI_ERROR, response.message);
+                Store.commit(Constants.Mutation.VideoFileInfo.Error, response.message);
                 return;
             }
 
-            Store.commit(Constants.MUTATION_VFI_PRESENT, response.info);
+            Store.commit(Constants.Mutation.VideoFileInfo.Present, response.info);
         });
     },
 
@@ -62,22 +62,22 @@ export default {
      * @param size
      */
     exportVideoFragment(framerate, size) {
-        Store.commit(Constants.MUTATION_EDITOR_LOADING);
+        Store.commit(Constants.Mutation.Editor.Loading);
 
         const videoFileId = Store.state.videoPlayer.id;
         const start = Store.state.position.start;
         const end = Store.state.position.end;
 
         if (!videoFileId) {
-            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video file not opened');
+            Store.commit(Constants.Mutation.Editor.Error, 'Video file not opened');
             return;
         }
         if (start === null) {
-            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment start not defined');
+            Store.commit(Constants.Mutation.Editor.Error, 'Video fragment start not defined');
             return;
         }
         if (end === null) {
-            Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment end not defined');
+            Store.commit(Constants.Mutation.Editor.Error, 'Video fragment end not defined');
             return;
         }
 
@@ -91,15 +91,15 @@ export default {
 
         $.post('/export-frames', params, response => {
             if (!response) {
-                Store.commit(Constants.MUTATION_EDITOR_ERROR, 'Video fragment save failed');
+                Store.commit(Constants.Mutation.Editor.Error, 'Video fragment save failed');
                 return;
             }
             if (!response.success) {
-                Store.commit(Constants.MUTATION_EDITOR_ERROR, response.message);
+                Store.commit(Constants.Mutation.Editor.Error, response.message);
                 return;
             }
 
-            Store.commit(Constants.MUTATION_EDITOR_PRESENT, response);
+            Store.commit(Constants.Mutation.Editor.Present, response);
         });
     },
 };

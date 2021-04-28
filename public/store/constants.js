@@ -1,31 +1,43 @@
 export default {
-    STATE_LOADING: 'loading',
-    STATE_PRESENT: 'present',
-    STATE_ERROR: 'error',
-    STATE_EMPTY: 'empty',
 
-    MUTATION_FSN_EMPTY: 'fileSystemNavigatorEmpty',
-    MUTATION_FSN_LOADING: 'fileSystemNavigatorLoading',
-    MUTATION_FSN_ERROR: 'fileSystemNavigatorError',
-    MUTATION_FSN_PRESENT: 'fileSystemNavigatorPresent',
+    State: {
+        Loading: 'loading',
+        Present: 'present',
+        Error: 'error',
+        Empty: 'empty'
+    },
 
-    MUTATION_VFI_EMPTY: 'videoFileInfoEmpty',
-    MUTATION_VFI_LOADING: 'videoFileInfoLoading',
-    MUTATION_VFI_ERROR: 'videoFileInfoError',
-    MUTATION_VFI_PRESENT: 'videoFileInfoPresent',
-
-    MUTATION_VP_EMPTY: 'videoPlayerEmpty',
-    MUTATION_VP_LOADING: 'videoPlayerLoading',
-    MUTATION_VP_ERROR: 'videoPlayerError',
-    MUTATION_VP_PRESENT: 'videoPlayerPresent',
-
-    MUTATION_POSITION_START: 'positionStart',
-    MUTATION_POSITION_END: 'positionEnd',
-
-    MUTATION_EDITOR_EMPTY: 'fragmentEditorEmpty',
-    MUTATION_EDITOR_LOADING: 'fragmentEditorLoading',
-    MUTATION_EDITOR_ERROR: 'fragmentEditorError',
-    MUTATION_EDITOR_PRESENT: 'fragmentEditorPresent',
-
-    MUTATION_OPEN_FILE_PANEL: 'openFilePanel',
+    Mutation: {
+        OpenFilePanel: {
+            Visible: 'openFilePanel',
+        },
+        FileSystemNavigator: {
+            Empty: 'fileSystemNavigatorEmpty',
+            Loading: 'fileSystemNavigatorLoading',
+            Error: 'fileSystemNavigatorError',
+            Present: 'fileSystemNavigatorPresent',
+        },
+        VideoFileInfo: {
+            Empty: 'videoFileInfoEmpty',
+            Loading: 'videoFileInfoLoading',
+            Error: 'videoFileInfoError',
+            Present: 'videoFileInfoPresent',
+        },
+        VideoPlayer: {
+            Empty: 'videoPlayerEmpty',
+            Loading: 'videoPlayerLoading',
+            Error: 'videoPlayerError',
+            Present: 'videoPlayerPresent',
+        },
+        RecordPosition: {
+            Start: 'positionStart',
+            End: 'positionEnd',
+        },
+        Editor: {
+            Empty: 'fragmentEditorEmpty',
+            Loading: 'fragmentEditorLoading',
+            Error: 'fragmentEditorError',
+            Present: 'fragmentEditorPresent',
+        },
+    },
 };

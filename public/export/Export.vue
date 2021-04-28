@@ -146,27 +146,27 @@
             },
 
             cancel() {
-                this.$store.commit(Constants.MUTATION_POSITION_START, null);
-                this.$store.commit(Constants.MUTATION_POSITION_END, null);
+                this.$store.commit(Constants.Mutation.RecordPosition.Start, null);
+                this.$store.commit(Constants.Mutation.RecordPosition.End, null);
             },
 
             plusStart() {
                 const duration = this.$store.state.videoFileInfo.data.duration;
                 const start = this.$store.state.position.start;
-                this.$store.commit(Constants.MUTATION_POSITION_START, Math.min(duration, start + 1/25.0));
+                this.$store.commit(Constants.Mutation.RecordPosition.Start, Math.min(duration, start + 1/25.0));
             },
             minusStart() {
                 const start = this.$store.state.position.start;
-                this.$store.commit(Constants.MUTATION_POSITION_START, Math.max(0.0, start - 1/25.0));
+                this.$store.commit(Constants.Mutation.RecordPosition.Start, Math.max(0.0, start - 1/25.0));
             },
             plusEnd() {
                 const duration = this.$store.state.videoFileInfo.data.duration;
                 const end = this.$store.state.position.end;
-                this.$store.commit(Constants.MUTATION_POSITION_END, Math.min(duration, end + 1/25.0));
+                this.$store.commit(Constants.Mutation.RecordPosition.End, Math.min(duration, end + 1/25.0));
             },
             minusEnd() {
                 const end = this.$store.state.position.end;
-                this.$store.commit(Constants.MUTATION_POSITION_END, Math.max(0.0, end - 1/25.0));
+                this.$store.commit(Constants.Mutation.RecordPosition.End, Math.max(0.0, end - 1/25.0));
             },
         },
     };

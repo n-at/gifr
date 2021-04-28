@@ -63,7 +63,7 @@
 
         methods: {
             close() {
-                this.$store.commit(Constants.MUTATION_VP_EMPTY);
+                this.$store.commit(Constants.Mutation.VideoPlayer.Empty);
             },
             nextFrame() {
                 this.player.pause();

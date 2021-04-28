@@ -6,17 +6,17 @@ export default createStore({
     state() {
         return {
             fileSystemNavigator: {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 data: null,
             },
             videoFileInfo: {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 data: null,
             },
             videoPlayer: {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 id: null,
                 path: null,
@@ -27,7 +27,7 @@ export default createStore({
                 end: null,
             },
             editor: {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 id: null,
                 framerate: null,
@@ -39,69 +39,69 @@ export default createStore({
 
     mutations: {
         //FileSystemNavigator
-        [Constants.MUTATION_FSN_EMPTY] (state) {
+        [Constants.Mutation.FileSystemNavigator.Empty] (state) {
             state.fileSystemNavigator = {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 data: null,
             };
         },
-        [Constants.MUTATION_FSN_LOADING] (state) {
+        [Constants.Mutation.FileSystemNavigator.Loading] (state) {
             state.fileSystemNavigator = {
-                state: Constants.STATE_LOADING,
+                state: Constants.State.Loading,
                 error: null,
                 data: null,
             };
         },
-        [Constants.MUTATION_FSN_PRESENT] (state, data) {
+        [Constants.Mutation.FileSystemNavigator.Present] (state, data) {
             state.fileSystemNavigator = {
-                state: Constants.STATE_PRESENT,
+                state: Constants.State.Present,
                 error: null,
                 data: data,
             };
         },
-        [Constants.MUTATION_FSN_ERROR] (state, message) {
+        [Constants.Mutation.FileSystemNavigator.Error] (state, message) {
             state.fileSystemNavigator = {
-                state: Constants.STATE_ERROR,
+                state: Constants.State.Error,
                 error: message,
                 data: null,
             };
         },
 
         //VideoFileInfo
-        [Constants.MUTATION_VFI_EMPTY] (state) {
+        [Constants.Mutation.VideoFileInfo.Empty] (state) {
             state.videoFileInfo = {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 data: null,
             };
         },
-        [Constants.MUTATION_VFI_LOADING] (state) {
+        [Constants.Mutation.VideoFileInfo.Loading] (state) {
             state.videoFileInfo = {
-                state: Constants.STATE_LOADING,
+                state: Constants.State.Loading,
                 error: null,
                 data: null,
             };
         },
-        [Constants.MUTATION_VFI_PRESENT] (state, data) {
+        [Constants.Mutation.VideoFileInfo.Present] (state, data) {
             state.videoFileInfo = {
-                state: Constants.STATE_PRESENT,
+                state: Constants.State.Present,
                 error: null,
                 data: data,
             };
         },
-        [Constants.MUTATION_VFI_ERROR] (state, message) {
+        [Constants.Mutation.VideoFileInfo.Error] (state, message) {
             state.videoFileInfo = {
-                state: Constants.STATE_ERROR,
+                state: Constants.State.Error,
                 error: message,
                 data: null,
             };
         },
 
         //VideoPlayer
-        [Constants.MUTATION_VP_EMPTY] (state) {
+        [Constants.Mutation.VideoPlayer.Empty] (state) {
             state.videoPlayer = {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 id: null,
                 path: null,
@@ -112,9 +112,9 @@ export default createStore({
                 end: null,
             };
         },
-        [Constants.MUTATION_VP_LOADING] (state) {
+        [Constants.Mutation.VideoPlayer.Loading] (state) {
             state.videoPlayer = {
-                state: Constants.STATE_LOADING,
+                state: Constants.State.Loading,
                 error: null,
                 id: null,
                 path: null,
@@ -125,22 +125,9 @@ export default createStore({
                 end: null,
             };
         },
-        [Constants.MUTATION_VP_ERROR] (state, message) {
+        [Constants.Mutation.VideoPlayer.Present] (state, payload) {
             state.videoPlayer = {
-                state: Constants.STATE_ERROR,
-                error: message,
-                id: null,
-                path: null,
-                subtitles: [],
-            };
-            state.position = {
-                start: null,
-                end: null,
-            };
-        },
-        [Constants.MUTATION_VP_PRESENT] (state, payload) {
-            state.videoPlayer = {
-                state: Constants.STATE_PRESENT,
+                state: Constants.State.Present,
                 error: null,
                 id: payload.id,
                 path: payload.path,
@@ -151,55 +138,68 @@ export default createStore({
                 end: null,
             };
         },
+        [Constants.Mutation.VideoPlayer.Error] (state, message) {
+            state.videoPlayer = {
+                state: Constants.State.Error,
+                error: message,
+                id: null,
+                path: null,
+                subtitles: [],
+            };
+            state.position = {
+                start: null,
+                end: null,
+            };
+        },
 
         //Position
-        [Constants.MUTATION_POSITION_START] (state, position) {
+        [Constants.Mutation.RecordPosition.Start] (state, position) {
             state.position.start = position;
         },
-        [Constants.MUTATION_POSITION_END] (state, position) {
+        [Constants.Mutation.RecordPosition.End] (state, position) {
             state.position.end = position;
         },
 
         //Editor
-        [Constants.MUTATION_EDITOR_EMPTY] (state) {
+        [Constants.Mutation.Editor.Empty] (state) {
             state.editor = {
-                state: Constants.STATE_EMPTY,
+                state: Constants.State.Empty,
                 error: null,
                 id: null,
                 framerate: null,
                 frames: null,
             };
         },
-        [Constants.MUTATION_EDITOR_LOADING] (state) {
+        [Constants.Mutation.Editor.Loading] (state) {
             state.editor = {
-                state: Constants.STATE_LOADING,
+                state: Constants.State.Loading,
                 error: null,
                 id: null,
                 framerate: null,
                 frames: null,
             };
         },
-        [Constants.MUTATION_EDITOR_ERROR] (state, message) {
+        [Constants.Mutation.Editor.Present] (state, data) {
             state.editor = {
-                state: Constants.STATE_ERROR,
-                error: message,
-                id: null,
-                framerate: null,
-                frames: null,
-            };
-        },
-        [Constants.MUTATION_EDITOR_PRESENT] (state, data) {
-            state.editor = {
-                state: Constants.STATE_PRESENT,
+                state: Constants.State.Present,
                 error: null,
                 id: data.id,
                 framerate: parseInt(data.framerate),
                 frames: parseInt(data.frames),
             };
         },
+        [Constants.Mutation.Editor.Error] (state, message) {
+            state.editor = {
+                state: Constants.State.Error,
+                error: message,
+                id: null,
+                framerate: null,
+                frames: null,
+            };
+        },
 
         //open file panel
-        [Constants.MUTATION_OPEN_FILE_PANEL] (state, value) {
+        [Constants.Mutation.OpenFilePanel.Visible] (state, value) {
             state.openFilePanel = !!value;
         },
     },

@@ -33,13 +33,13 @@
 
         computed: {
             isEmpty() {
-                return this.$store.state.videoPlayer.state === Constants.STATE_EMPTY;
+                return this.$store.state.videoPlayer.state === Constants.State.Empty;
             },
             isLoading() {
-                return this.$store.state.videoPlayer.state === Constants.STATE_LOADING;
+                return this.$store.state.videoPlayer.state === Constants.State.Loading;
             },
             isError() {
-                return this.$store.state.videoPlayer.state === Constants.STATE_ERROR;
+                return this.$store.state.videoPlayer.state === Constants.State.Error;
             },
             errorMessage() {
                 return this.$store.state.videoPlayer.error;
@@ -72,10 +72,10 @@
 
         methods: {
             setStartPosition(position) {
-                this.$store.commit(Constants.MUTATION_POSITION_START, position);
+                this.$store.commit(Constants.Mutation.RecordPosition.Start, position);
             },
             setEndPosition(position) {
-                this.$store.commit(Constants.MUTATION_POSITION_END, position);
+                this.$store.commit(Constants.Mutation.RecordPosition.End, position);
             },
         },
     };

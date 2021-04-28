@@ -67,13 +67,13 @@ export default {
 
         computed: {
             isEmpty() {
-                return this.$store.state.editor.state === Constants.STATE_EMPTY;
+                return this.$store.state.editor.state === Constants.State.Empty;
             },
             isLoading() {
-                return this.$store.state.editor.state === Constants.STATE_LOADING;
+                return this.$store.state.editor.state === Constants.State.Loading;
             },
             isError() {
-                return this.$store.state.editor.state === Constants.STATE_ERROR;
+                return this.$store.state.editor.state === Constants.State.Error;
             },
             errorMessage() {
                 return this.$store.state.editor.error;
@@ -122,7 +122,7 @@ export default {
 
         methods: {
             cancel() {
-                this.$store.commit(Constants.MUTATION_EDITOR_EMPTY);
+                this.$store.commit(Constants.Mutation.Editor.Empty);
             },
             save() {
                 const start = this.range[0];

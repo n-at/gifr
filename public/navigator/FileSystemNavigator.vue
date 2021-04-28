@@ -50,13 +50,13 @@
 
         computed: {
             isEmpty() {
-                return this.$store.state.fileSystemNavigator.state === Constants.STATE_EMPTY;
+                return this.$store.state.fileSystemNavigator.state === Constants.State.Empty;
             },
             isLoading() {
-                return this.$store.state.fileSystemNavigator.state === Constants.STATE_LOADING;
+                return this.$store.state.fileSystemNavigator.state === Constants.State.Loading;
             },
             isError() {
-                return this.$store.state.fileSystemNavigator.state === Constants.STATE_ERROR;
+                return this.$store.state.fileSystemNavigator.state === Constants.State.Error;
             },
             errorMessage() {
                 return this.$store.state.fileSystemNavigator.error;

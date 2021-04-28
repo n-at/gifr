@@ -51,13 +51,13 @@
 
         computed: {
             isEmpty() {
-                return this.$store.state.videoFileInfo.state === Constants.STATE_EMPTY;
+                return this.$store.state.videoFileInfo.state === Constants.State.Empty;
             },
             isLoading() {
-                return this.$store.state.videoFileInfo.state === Constants.STATE_LOADING;
+                return this.$store.state.videoFileInfo.state === Constants.State.Loading;
             },
             isError() {
-                return this.$store.state.videoFileInfo.state === Constants.STATE_ERROR;
+                return this.$store.state.videoFileInfo.state === Constants.State.Error;
             },
             errorMessage() {
                 return this.$store.state.videoFileInfo.error;
@@ -85,12 +85,12 @@
 
         methods: {
             open() {
-                this.$store.commit(Constants.MUTATION_OPEN_FILE_PANEL, false);
-                this.$store.commit(Constants.MUTATION_VP_LOADING);
+                this.$store.commit(Constants.Mutation.OpenFilePanel.Visible, false);
+                this.$store.commit(Constants.Mutation.VideoPlayer.Loading);
 
                 setTimeout(() => {
                     const videoFileId = this.$store.state.videoFileInfo.data.id;
-                    this.$store.commit(Constants.MUTATION_VP_PRESENT, {
+                    this.$store.commit(Constants.Mutation.VideoPlayer.Present, {
                         id: videoFileId,
                         path: this.fileInfo.path,
                         subtitles: this.$store.state.videoFileInfo.data.subtitles,

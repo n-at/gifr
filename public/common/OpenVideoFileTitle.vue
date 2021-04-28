@@ -15,7 +15,7 @@
     export default {
         methods: {
             close() {
-                this.$store.commit(Constants.MUTATION_OPEN_FILE_PANEL, false);
+                this.$store.commit(Constants.Mutation.OpenFilePanel.Visible, false);
             },
         },
     };

@@ -36,7 +36,7 @@
 
         methods: {
             open() {
-                this.$store.commit(Constants.MUTATION_OPEN_FILE_PANEL, true);
+                this.$store.commit(Constants.Mutation.OpenFilePanel.Visible, true);
             },
         },
     };
