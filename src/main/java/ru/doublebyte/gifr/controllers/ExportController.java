@@ -129,7 +129,8 @@ public class ExportController {
                 var stream = gifExporter.exportFramesGif(exportId, frameStart, frameEnd, framerate)
         ) {
             var time = LocalDateTime.now().format(timeFormatter);
-            var filename = String.format("%s-%s.gif", time, exportId);
+            var fileId = exportId.replaceAll("[^a-zA-Z0-9\\-]", "");
+            var filename = String.format("%s-%s.gif", time, fileId);
             response.setHeader("Content-Disposition", "attachment; filename=" + filename);
 
             StreamUtils.copy(stream, response.getOutputStream());
