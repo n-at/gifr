@@ -66,9 +66,9 @@ public class ExportController {
             StreamUtils.copy(stream, response.getOutputStream());
             stream.close();
         } catch (Exception e) {
-            logger.info("export error", e);
+            logger.error("export error", e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().println("Error: " + e.getMessage());
+            response.getWriter().println("Failed to export gif :(");
             response.getWriter().flush();
         }
     }
@@ -135,9 +135,9 @@ public class ExportController {
 
             StreamUtils.copy(stream, response.getOutputStream());
         } catch (Exception e) {
-            logger.info("export frames gif error", e);
+            logger.error("export frames gif error", e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().println("Error: " + e.getMessage());
+            response.getWriter().println("Failed to export gif :(");
             response.getWriter().flush();
         }
     }
