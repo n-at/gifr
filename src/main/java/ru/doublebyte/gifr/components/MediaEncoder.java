@@ -56,11 +56,8 @@ public class MediaEncoder {
 
         //segment duration constants
         audioFrameDuration = 1024.0 / (double) this.globalAudioEncodingParams.getSampleRate(); //one AAC frame contains 1024 samples
-
-        final var videoFrameDuration = 1.0 / (double) this.globalVideoEncodingParams.getFramerate();
-        final var avFrameDuration = videoFrameDuration * audioFrameDuration; //segment should contain whole video and audio frames
-        segmentDuration = Math.floor((double) segmentParams.getDuration() / avFrameDuration) * avFrameDuration;
-        audioOverheadDuration = Math.floor(globalAudioEncodingParams.getOverheadDuration() / avFrameDuration) * avFrameDuration;
+        segmentDuration = Math.floor(segmentParams.getDuration() / segmentParams.getAvFrameDuration()) * segmentParams.getAvFrameDuration();
+        audioOverheadDuration = Math.floor(globalAudioEncodingParams.getOverheadDuration() / segmentParams.getAvFrameDuration()) * segmentParams.getAvFrameDuration();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -99,7 +96,7 @@ public class MediaEncoder {
 
             //fix duration and buffer time
             dash = dash.replaceAll("mediaPresentationDuration=\".+\"", String.format("mediaPresentationDuration=\"%s\"", videoFileInfo.getMpdDuration()));
-            dash = dash.replaceAll("minBufferTime=\".+\"", String.format(Locale.US, "minBufferTime=\"PT%dS\"", segmentParams.getDuration() * 2));
+            dash = dash.replaceAll("minBufferTime=\".+\"", String.format(Locale.US, "minBufferTime=\"PT%dS\"", (int)segmentParams.getDuration() * 2));
 
             //fix path to init and chunk files
             dash = dash.replaceAll("init-", "/video/init/");
@@ -324,9 +321,9 @@ public class MediaEncoder {
 
     protected String audioSegmentTrimStartTime(int segmentIdx) {
         if (segmentIdx == 1) {
-            return decimalOutput(audioFrameDuration);
+            return decimalOutput(0);
         } else {
-            return decimalOutput(audioOverheadDuration);
+            return decimalOutput(audioOverheadDuration - audioFrameDuration);
         }
     }
 

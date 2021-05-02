@@ -5,7 +5,8 @@ public class SegmentParams {
     private String dashFileName = "dash.mpd";
     private String dashOutputPath = "dash";
     private String chunkOutputPath = "chunks";
-    private int duration = 10;
+    private double duration = 10;
+    private double avFrameDuration = 0.32;
     private int lifetime = 120;
     private int encodingTimeout = 5;
 
@@ -41,12 +42,20 @@ public class SegmentParams {
         this.chunkOutputPath = chunkOutputPath;
     }
 
-    public int getDuration() {
+    public double getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
         this.duration = duration;
+    }
+
+    public double getAvFrameDuration() {
+        return avFrameDuration;
+    }
+
+    public void setAvFrameDuration(double avFrameDuration) {
+        this.avFrameDuration = avFrameDuration;
     }
 
     public int getLifetime() {

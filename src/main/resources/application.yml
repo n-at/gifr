@@ -23,7 +23,7 @@ global-audio-encoding-params:
   codec: "aac"
   bitrate: "192k"
   channels: 2
-  sample-rate: 44100
+  sample-rate: 48000
   encoding-timeout: 5
   concurrent-jobs: 2
   overhead-duration: 1
@@ -32,7 +32,13 @@ segment-params:
   dash-file-name: "dash.mpd"
   dash-output-path: "dash"
   chunk-output-path: "chunks"
+  #target segment duration
   duration: 10
+  #minimum amount of seconds containing integer number of audio AND video frames
+  #for video framerate 25 fps and audio sample rate 48000 Hz it equals 0.32 seconds
+  #0.32s = 8 video frames
+  #0.32s = 15 AAC frames
+  av-frame-duration: 0.32
   lifetime: 120
   encoding-timeout: 5
 
