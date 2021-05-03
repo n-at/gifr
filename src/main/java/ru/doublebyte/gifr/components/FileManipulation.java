@@ -59,22 +59,18 @@ public class FileManipulation {
     ///////////////////////////////////////////////////////////////////////////
 
     public String getDashFileName(String videoFileId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        return String.format("%s-%s", videoFileId, segmentParams.getDashFileName());
+        return String.format("%s-%s", ensureVideoFileIdIsValid(videoFileId), segmentParams.getDashFileName());
     }
 
     public Path getDashFilePath(String videoFileId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
         return Paths.get(segmentParams.getDashOutputPath(), getDashFileName(videoFileId));
     }
 
     public boolean dashFileExists(String videoFileId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
         return Files.exists(getDashFilePath(videoFileId));
     }
 
     public InputStream getDashFileInputStream(String videoFileId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
         if (!dashFileExists(videoFileId)) {
             throw new IllegalArgumentException("dash file does not exist");
         }
@@ -88,26 +84,18 @@ public class FileManipulation {
     ///////////////////////////////////////////////////////////////////////////
 
     public String getInitFileName(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        return String.format("init-%s-%s.m4s", videoFileId, streamId);
+        return String.format("init-%s-%s.m4s", ensureVideoFileIdIsValid(videoFileId), ensureStreamIdIsValid(streamId));
     }
 
     public Path getInitFilePath(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         return Paths.get(segmentParams.getDashOutputPath(), getInitFileName(videoFileId, streamId));
     }
 
     public boolean initFileExists(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         return Files.exists(getInitFilePath(videoFileId, streamId));
     }
 
     public InputStream getInitFileInputStream(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         if (!initFileExists(videoFileId, streamId)) {
             throw new IllegalArgumentException("init file does not exist");
         }
@@ -121,26 +109,18 @@ public class FileManipulation {
     ///////////////////////////////////////////////////////////////////////////
 
     public String getSubtitlesFileName(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        return String.format("subtitles-%s-%s.vtt", videoFileId, streamId);
+        return String.format("subtitles-%s-%s.vtt", ensureVideoFileIdIsValid(videoFileId), ensureStreamIdIsValid(streamId));
     }
 
     public Path getSubtitlesFilePath(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         return Paths.get(segmentParams.getDashOutputPath(), getSubtitlesFileName(videoFileId, streamId));
     }
 
     public boolean subtitlesFileExists(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         return Files.exists(getSubtitlesFilePath(videoFileId, streamId));
     }
 
     public InputStream getSubtitlesFileInputStream(String videoFileId, String streamId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
         if (!subtitlesFileExists(videoFileId, streamId)) {
             throw new IllegalArgumentException("subtitles file does not exist");
         }
@@ -154,30 +134,18 @@ public class FileManipulation {
     ///////////////////////////////////////////////////////////////////////////
 
     public String getChunkFileName(String videoFileId, String streamId, String chunkId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        chunkId = ensureChunkIdIsValid(chunkId);
-        return String.format("chunk-%s-%s-%s.m4s", videoFileId, streamId, chunkId);
+        return String.format("chunk-%s-%s-%s.m4s", ensureVideoFileIdIsValid(videoFileId), ensureStreamIdIsValid(streamId), ensureChunkIdIsValid(chunkId));
     }
 
     public Path getChunkFilePath(String videoFileId, String streamId, String chunkId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        chunkId = ensureChunkIdIsValid(chunkId);
         return Paths.get(segmentParams.getChunkOutputPath(), getChunkFileName(videoFileId, streamId, chunkId));
     }
 
     public boolean chunkFileExists(String videoFileId, String streamId, String chunkId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        chunkId = ensureChunkIdIsValid(chunkId);
         return Files.exists(getChunkFilePath(videoFileId, streamId, chunkId));
     }
 
     public InputStream getChunkFileInputStream(String videoFileId, String streamId, String chunkId) {
-        videoFileId = ensureVideoFileIdIsValid(videoFileId);
-        streamId = ensureStreamIdIsValid(streamId);
-        chunkId = ensureChunkIdIsValid(chunkId);
         if (!chunkFileExists(videoFileId, streamId, chunkId)) {
             throw new IllegalArgumentException("chunk file does not exist");
         }
@@ -195,7 +163,11 @@ public class FileManipulation {
      */
     public void removeChunkFile(String chunkFileName) {
         try {
-            var path = Paths.get(segmentParams.getChunkOutputPath(), chunkFileName);
+            var chunkPath = Paths.get(segmentParams.getChunkOutputPath()).toAbsolutePath();
+            var path = Paths.get(segmentParams.getChunkOutputPath(), chunkFileName).toAbsolutePath();
+            if (!path.startsWith(chunkPath)) {
+                throw new IllegalArgumentException("chunk should be inside of chunk path");
+            }
             if (Files.exists(path)) {
                 logger.info("remove old chunk: {}", chunkFileName);
                 Files.delete(path);
@@ -210,37 +182,31 @@ public class FileManipulation {
     ///////////////////////////////////////////////////////////////////////////
 
     public String getOutputGifFileName(String exportId) {
-        exportId = ensureExportIdIsValid(exportId);
-        return String.format("%s.gif", exportId);
+        return String.format("%s.gif", ensureExportIdIsValid(exportId));
     }
 
     public Path getOutputGifFilePath(String exportId) {
-        exportId = ensureExportIdIsValid(exportId);
         return Paths.get(exportParams.getPath(), getOutputGifFileName(exportId));
     }
 
     public Path getOutputGifPalettePath(String exportId) {
-        exportId = ensureExportIdIsValid(exportId);
-        return Paths.get(exportParams.getPath(), String.format("%s-palette.png", exportId));
+        return Paths.get(exportParams.getPath(), String.format("%s-palette.png", ensureExportIdIsValid(exportId)));
     }
 
     ///////////////////////////////////////////////////////////////////////////
 
     public String getOutputFramesPath(String exportId) {
-        exportId = ensureExportIdIsValid(exportId);
-        var path = Paths.get(exportParams.getPath(), exportId).toString();
+        var path = Paths.get(exportParams.getPath(), ensureExportIdIsValid(exportId)).toString();
         ensureDirectoryExists(path);
         return path;
     }
 
     public String getOutputFramesFileNameTemplate(String exportId) {
-        exportId = ensureExportIdIsValid(exportId);
         return Paths.get(getOutputFramesPath(exportId), "%010d.png").toString();
     }
 
     public int getOutputFrameCount(String exportId) {
         try {
-            exportId = ensureExportIdIsValid(exportId);
             var framesPath = Paths.get(getOutputFramesPath(exportId));
 
             return (int) Files.walk(framesPath)
@@ -254,24 +220,20 @@ public class FileManipulation {
     }
 
     public Path getOutputFramePath(String exportId, int frameId) {
-        exportId = ensureExportIdIsValid(exportId);
         var fileName = String.format("%010d.png", frameId);
         return Paths.get(getOutputFramesPath(exportId), fileName);
     }
 
     public boolean outputFrameExists(String exportId, int frameId) {
-        exportId = ensureExportIdIsValid(exportId);
         return Files.exists(getOutputFramePath(exportId, frameId));
     }
 
     public Path getOutputFramePreviewPath(String exportId, int frameId) {
-        exportId = ensureExportIdIsValid(exportId);
         var fileName = String.format("%010d.preview.jpg", frameId);
         return Paths.get(getOutputFramesPath(exportId), fileName);
     }
 
     public boolean outputFramePreviewExists(String exportId, int frameId) {
-        exportId = ensureExportIdIsValid(exportId);
         return Files.exists(getOutputFramePreviewPath(exportId, frameId));
     }
 
