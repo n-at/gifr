@@ -42,6 +42,9 @@ public class FileSystemNavigator {
                         if (file.isHidden()) {
                             return false;
                         }
+                        if (!Files.isReadable(path)) {
+                            return false;
+                        }
                         return !path.equals(startPath);
                     })
                     .map(path -> {
