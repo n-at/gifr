@@ -8,6 +8,8 @@ import ru.doublebyte.gifr.components.FileManipulation;
 import ru.doublebyte.gifr.configuration.FFMPEGParams;
 import ru.doublebyte.gifr.struct.CommandlineArguments;
 
+import javax.annotation.PreDestroy;
+
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -28,9 +30,15 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) {
         fileManipulation.ensureDirectoriesExist();
-        fileManipulation.removeEncodedChunks();
+        cleanupTmpFiles();
         commandlineExecutor.execute(new CommandlineArguments(ffmpegParams.getFFMPEGBinary()).add("-version"));
         commandlineExecutor.execute(new CommandlineArguments(ffmpegParams.getFFProbeBinary()).add("-version"));
+    }
+
+    @PreDestroy
+    private void cleanupTmpFiles() {
+        fileManipulation.removeEncodedChunks();
+        fileManipulation.removeExportFiles();
     }
 
 }

@@ -7,9 +7,8 @@ import ru.doublebyte.gifr.configuration.SegmentParams;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileManipulation {
 
@@ -45,7 +44,16 @@ public class FileManipulation {
      * Remove all chunks from chunks output directory
      */
     public void removeEncodedChunks() {
+        logger.info("removing all encoded chunks from '{}'...", segmentParams.getChunkOutputPath());
         removeAllChunksFromDirectory(segmentParams.getChunkOutputPath());
+    }
+
+    /**
+     * Remove all files from export directory
+     */
+    public void removeExportFiles() {
+        logger.info("removing all export files from '{}'...", exportParams.getPath());
+        removeAllExportFilesInDirectory(exportParams.getPath());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -294,6 +302,47 @@ public class FileManipulation {
                     });
         } catch (Exception e) {
             logger.error("chunks delete error", e);
+        }
+    }
+
+    private void removeAllExportFilesInDirectory(String directory) {
+        var initialPath = Paths.get(directory).toAbsolutePath();
+
+        try {
+            Files.walkFileTree(initialPath, new SimpleFileVisitor<>(){
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (!file.toAbsolutePath().startsWith(initialPath)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    var fileName = file.getFileName().toString();
+                    if (!fileName.matches("^.+\\.(gif|png|jpg)$")) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    Files.delete(file);
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path directory, IOException exc) throws IOException {
+                    var currentPath = directory.toAbsolutePath();
+                    if (!currentPath.startsWith(initialPath)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+                    if (currentPath.equals(initialPath)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    Files.delete(directory);
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (Exception e) {
+            logger.error("export files delete error", e);
         }
     }
 
