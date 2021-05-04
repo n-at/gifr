@@ -23,7 +23,7 @@
                 if (!videoFileName) {
                     return 'Open video file';
                 }
-                const pathParts = videoFileName.split('/');
+                const pathParts = videoFileName.split(this.$store.state.fileSystemNavigator.data.separator);
                 const fileNameParts = pathParts[pathParts.length-1].split('.');
                 fileNameParts.pop();
                 return fileNameParts.join('.');
