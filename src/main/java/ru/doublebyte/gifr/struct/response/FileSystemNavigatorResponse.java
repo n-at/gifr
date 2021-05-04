@@ -2,23 +2,23 @@ package ru.doublebyte.gifr.struct.response;
 
 import ru.doublebyte.gifr.struct.FileSystemEntry;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileSystemNavigatorResponse extends Response {
 
+    private String separator = File.separator;
     private String currentPath;
-    private String previousPath;
     private List<FileSystemEntry> entries = new ArrayList<>();
 
     ///////////////////////////////////////////////////////////////////////////
 
-    public static FileSystemNavigatorResponse success(String currentPath, String previousPath, List<FileSystemEntry> entries) {
+    public static FileSystemNavigatorResponse success(String currentPath, List<FileSystemEntry> entries) {
         var response = new FileSystemNavigatorResponse();
         response.setSuccess(true);
         response.setMessage("ok");
         response.currentPath = currentPath;
-        response.previousPath = previousPath;
         response.entries = entries;
         return response;
     }
@@ -41,11 +41,11 @@ public class FileSystemNavigatorResponse extends Response {
         this.entries = entries;
     }
 
-    public String getPreviousPath() {
-        return previousPath;
+    public String getSeparator() {
+        return separator;
     }
 
-    public void setPreviousPath(String previousPath) {
-        this.previousPath = previousPath;
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
 }

@@ -17,7 +17,10 @@
                         <button type="button" class="btn btn-sm btn-outline-secondary mr-1"
                                 v-for="entry in currentPathEntries"
                                 @click="open(entry)">
-                            /{{ entry.name }}
+                            <span v-if="entry.fullPath === 'FILE_SYSTEM_ROOTS'">
+                               <i class="fa fa-desktop"></i>
+                            </span>
+                            {{ entry.name }}
                         </button>
                     </span>
                 </div>
@@ -68,23 +71,30 @@
                     return '';
                 }
             },
+            separator() {
+                return this.$store.state.fileSystemNavigator.data.separator;
+            },
             currentPathEntries() {
-                const currentPath = this.currentPath;
-                if (currentPath === '') {
+                let currentPath = this.currentPath;
+                if (currentPath === '' || currentPath === 'FILE_SYSTEM_ROOTS') {
                     return [];
                 }
+                if (currentPath[currentPath.length-1] === this.separator) {
+                    currentPath = currentPath.substring(0, currentPath.length-1);
+                }
 
-                let path = '/';
-                let entries = [];
+                let path = '';
+                let entries = [{
+                    type: 'Directory',
+                    name: '',
+                    fullPath: 'FILE_SYSTEM_ROOTS',
+                }];
 
-                currentPath.split('/').forEach(segment => {
-                    if (segment === '' && entries.length !== 0) {
-                        return;
-                    }
-                    path += segment + '/';
+                currentPath.split(this.separator).forEach(segment => {
+                    path += segment + this.separator;
                     entries.push({
                         type: 'Directory',
-                        name: segment,
+                        name: segment.length === 0 ? this.separator : segment,
                         fullPath: path,
                     });
                 });

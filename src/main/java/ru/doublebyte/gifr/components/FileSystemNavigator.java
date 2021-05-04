@@ -3,11 +3,13 @@ package ru.doublebyte.gifr.components;
 import ru.doublebyte.gifr.configuration.FileSystemNavigatorConfiguration;
 import ru.doublebyte.gifr.struct.FileSystemEntry;
 
+import java.io.File;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileSystemNavigator {
 
@@ -26,6 +28,9 @@ public class FileSystemNavigator {
      * @return ...
      */
     public List<FileSystemEntry> listDirectory(String browsePath) {
+        if ("FILE_SYSTEM_ROOTS".equals(browsePath)) {
+            return listRoots();
+        }
         if (browsePath == null || browsePath.isEmpty()) {
             browsePath = configuration.getDefaultStartDirectory();
         }
@@ -73,6 +78,18 @@ public class FileSystemNavigator {
      */
     public String getDefaultPath() {
         return Paths.get(configuration.getDefaultStartDirectory()).toAbsolutePath().toString();
+    }
+
+    private List<FileSystemEntry> listRoots() {
+        return Stream.of(File.listRoots())
+                .map(root -> {
+                    var entry = new FileSystemEntry();
+                    entry.setType(FileSystemEntry.Type.Directory);
+                    entry.setFullPath(root.getAbsolutePath());
+                    entry.setName(root.getAbsolutePath());
+                    return entry;
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -26,8 +26,8 @@ export default {
 
             Store.commit(Constants.Mutation.FileSystemNavigator.Present, {
                 currentPath: response.currentPath,
-                previousPath: response.previousPath,
                 entries: response.entries,
+                separator: response.separator,
             });
         });
     },

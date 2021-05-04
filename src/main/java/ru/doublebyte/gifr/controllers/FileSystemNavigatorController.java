@@ -39,12 +39,7 @@ public class FileSystemNavigatorController {
 
             logger.info("list files {}", path);
 
-            var previousPath = Paths.get(path).getParent();
-            if (previousPath == null) {
-                previousPath = Paths.get(path);
-            }
-
-            return FileSystemNavigatorResponse.success(path, previousPath.toAbsolutePath().toString(), fileSystemNavigator.listDirectory(path));
+            return FileSystemNavigatorResponse.success(path, fileSystemNavigator.listDirectory(path));
         } catch (Exception e) {
             logger.error("list files error " + path, e);
             return Response.error(e.getMessage());
