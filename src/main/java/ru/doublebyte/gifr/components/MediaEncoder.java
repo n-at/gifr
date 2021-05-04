@@ -68,8 +68,6 @@ public class MediaEncoder {
      * @param videoFileInfo Video file info
      */
     public void generateDashInit(VideoFileInfo videoFileInfo) {
-        final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
-
         final var commandline = new CommandlineArguments(ffmpegParams.getFFMPEGBinary())
                 .add("-hide_banner")
                 .add("-y")
@@ -87,11 +85,12 @@ public class MediaEncoder {
                 .add("-seg_duration", decimalOutput(segmentDuration))
                 .add("-adaptation_sets", getDashAdaptationSets(videoFileInfo))
                 .add("-f", "dash")
-                .add(dashFilePath.toString());
+                .add(fileManipulation.getDashFileName(videoFileInfo.getChecksum()));
 
-        commandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout(), true);
+        commandlineExecutor.execute(commandline, segmentParams.getEncodingTimeout(), segmentParams.getDashOutputPath());
 
         try {
+            final var dashFilePath = fileManipulation.getDashFilePath(videoFileInfo.getChecksum());
             var dash = Files.readString(dashFilePath);
 
             //fix duration and buffer time

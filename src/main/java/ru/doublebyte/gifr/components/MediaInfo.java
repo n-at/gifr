@@ -98,7 +98,7 @@ public class MediaInfo {
                     .add("-of", "default=noprint_wrappers=1:nokey=0")
                     .add(videoFilePath);
 
-            var output = commandlineExecutor.execute(commandline);
+            var output = commandlineExecutor.output(commandline);
             if (output != null && !output.isEmpty()) {
                 return fromFFProbeOutput(output);
             } else {
@@ -125,7 +125,7 @@ public class MediaInfo {
                     .add("-of", "default=noprint_wrappers=1:nokey=1")
                     .add(videoFilePath);
 
-            var output = commandlineExecutor.execute(commandline);
+            var output = commandlineExecutor.output(commandline);
             if (output != null && !output.isEmpty()) {
                 return ffprobeDouble(output);
             } else {
