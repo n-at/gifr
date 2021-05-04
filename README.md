@@ -19,7 +19,6 @@ Features:
 
 Limitations:
 
-* Minor video or audio artifacts may occur
 * For local use only (no security implemented)
 * Transcoding depends on performance of the machine (some formats work better, some not)
 
@@ -37,7 +36,7 @@ Everything will be built in one `target/gifr.jar` file.
 Running
 -------
 
-Tested only on macOS and Linux systems. `ffmpeg` and `ffprobe` are required in PATH.
+`ffmpeg` and `ffprobe` are required in PATH.
 
 Run with `java`:
 
