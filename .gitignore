@@ -10,9 +10,10 @@
 /*.webm
 /dash/
 /chunks/
+/export/
+/release/
 /public/build
 /src/main/resources/public/build
 /node_modules/
-*.http
-/export/
+/*.http
 /*.jar
