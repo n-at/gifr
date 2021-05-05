@@ -1,42 +1,76 @@
-name: Build and package
+name: Build, package, release
 
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
     - name: Set up Node.js 14
       uses: actions/setup-node@v1
       with:
         node-version: '15.x'
-        
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
         java-version: '11'
         distribution: 'adopt'
         
-    - name: Install npm dependencies
-      run: npm install
-      
-    - name: Build JavaScript
-      run: npm run build
-      
-    - name: Build Java
-      run: mvn -B package --file pom.xml
+    - name: Build
+      run: cd scripts && ./build_release.sh && cd ..
 
-    - name: Save build
-      uses: actions/upload-artifact@v2
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: build
-        path: target/gifr.jar
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload linux-amd64
+      id: upload-linux-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "./release/linux-amd64.tar.gz"
+        asset_name: "linux-amd64.tar.gz"
+        asset_content_type: "application/gzip"
+    - name: Upload linux-arm64
+      id: upload-linux-arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "./release/linux-arm64.tar.gz"
+        asset_name: "linux-arm64.tar.gz"
+        asset_content_type: "application/gzip"
+    - name: Upload mac-amd64
+      id: upload-mac-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "./release/mac-amd64.tar.gz"
+        asset_name: "mac-amd64.tar.gz"
+        asset_content_type: "application/gzip"
+    - name: Upload windows-amd64
+      id: upload-windows-amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: "./release/windows-amd64.tar.gz"
+        asset_name: "windows-amd64.tar.gz"
+        asset_content_type: "application/gzip"

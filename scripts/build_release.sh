@@ -54,6 +54,8 @@ function make_release {
   download_binary "${ffprobe_url}" "${name}/${ffprobe_destination}"
 
   chmod 0777 "${name}/${ffmpeg_destination}" "${name}/${ffprobe_destination}"
+
+  tar -cvzf "${name}.tar.gz" "${name}"
 }
 
 ###############################################################################
