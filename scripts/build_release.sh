@@ -11,8 +11,8 @@ ffprobe_linux_arm64="https://github.com/n-at/ffmpeg-builds/raw/master/ffmpeg-4.4
 ffmpeg_mac_amd64="https://github.com/n-at/ffmpeg-builds/raw/master/ffmpeg-4.4-mac/ffmpeg"
 ffprobe_mac_amd64="https://github.com/n-at/ffmpeg-builds/raw/master/ffmpeg-4.4-mac/ffprobe"
 
-ffmpeg_windows_amd64="https://github.com/n-at/ffmpeg-builds/blob/master/ffmpeg-4.4-windows/bin/ffmpeg.exe"
-ffprobe_windows_amd64="https://github.com/n-at/ffmpeg-builds/blob/master/ffmpeg-4.4-windows/bin/ffprobe.exe"
+ffmpeg_windows_amd64="https://github.com/n-at/ffmpeg-builds/raw/master/ffmpeg-4.4-windows/bin/ffmpeg.exe"
+ffprobe_windows_amd64="https://github.com/n-at/ffmpeg-builds/raw/master/ffmpeg-4.4-windows/bin/ffprobe.exe"
 
 ###############################################################################
 
