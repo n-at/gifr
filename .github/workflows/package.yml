@@ -42,7 +42,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./release/linux_amd64.tar.gz"
+        asset_path: "./release/gifr_linux_amd64.tar.gz"
         asset_name: "gifr_linux_amd64.tar.gz"
         asset_content_type: "application/gzip"
     - name: Upload linux-arm64
@@ -52,7 +52,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./release/linux_arm64.tar.gz"
+        asset_path: "./release/gifr_linux_arm64.tar.gz"
         asset_name: "gifr_linux_arm64.tar.gz"
         asset_content_type: "application/gzip"
     - name: Upload mac-amd64
@@ -62,7 +62,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./release/macos_amd64.tar.gz"
+        asset_path: "./release/gifr_macos_amd64.tar.gz"
         asset_name: "gifr_macos_amd64.tar.gz"
         asset_content_type: "application/gzip"
     - name: Upload windows-amd64
@@ -72,6 +72,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "./release/windows_amd64.tar.gz"
-        asset_name: "gifr_windows_amd64.tar.gz"
-        asset_content_type: "application/gzip"
+        asset_path: "./release/gifr_windows_amd64.zip"
+        asset_name: "gifr_windows_amd64.zip"
+        asset_content_type: "application/zip"

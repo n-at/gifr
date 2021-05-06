@@ -36,7 +36,7 @@ Everything will be built in one `target/gifr.jar` file.
 Running
 -------
 
-`ffmpeg` and `ffprobe` are required in PATH.
+`ffmpeg` and `ffprobe` are required in PATH (included in release builds).
 
 Run with `java`:
 
@@ -46,7 +46,7 @@ Or just (since it is an executable jar):
 
     ./gifr.jar
 
-Go to http://localhost:8080
+Go to http://localhost:5000
 
 Configuration
 -------------

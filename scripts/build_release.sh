@@ -1,10 +1,12 @@
 #!/bin/bash
 
-linux_amd64_package_url="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz"
-linux_arm64_package_url="https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz"
-windows_amd64_package_url="https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-05-05-12-34/ffmpeg-n4.4-10-g75c3969292-win64-gpl-4.4.zip"
-macos_amd64_ffmpeg_url="https://evermeet.cx/ffmpeg/ffmpeg-4.4.zip"
-macos_amd64_ffprobe_url="https://evermeet.cx/ffmpeg/ffprobe-4.4.zip"
+linux_amd64_package_url="https://github.com/n-at/ffmpeg-builds/releases/download/v4.4/linux-ffmpeg-release-amd64-static.tar.xz"
+linux_arm64_package_url="https://github.com/n-at/ffmpeg-builds/releases/download/v4.4/linux-ffmpeg-release-arm64-static.tar.xz"
+windows_amd64_package_url="https://github.com/n-at/ffmpeg-builds/releases/download/v4.4/ffmpeg-4.4-windows-amd64.tar.xz"
+macos_amd64_ffmpeg_url="https://github.com/n-at/ffmpeg-builds/releases/download/v4.4/macos-ffmpeg-4.4.zip"
+macos_amd64_ffprobe_url="https://github.com/n-at/ffmpeg-builds/releases/download/v4.4/macos-ffprobe-4.4.zip"
+
+ffmpeg_license_url="https://raw.githubusercontent.com/n-at/ffmpeg-builds/main/LICENSE"
 
 ###############################################################################
 
@@ -18,7 +20,6 @@ function download_binary {
 
   wget -O "${destination}" "${url}"
 }
-
 
 function unpack_tar {
   archive_name="${1}"
@@ -35,31 +36,35 @@ function release {
   build_arch="${2}"
 
   build_name="${build_platform}_${build_arch}"
+  build_path="gifr_${build_name}"
 
   if [ "${build_platform}" = "windows" ]; then
-    run_script_name="${build_name}_run.bat"
-    run_script="gifr.bat"
+    run_script_source="${build_name}_run.bat"
+    run_script_destination="gifr.bat"
     ffmpeg_executable_name="ffmpeg.exe"
     ffprobe_executable_name="ffprobe.exe"
   else
-    run_script_name="${build_name}_run.sh"
-    run_script="gifr.sh"
+    run_script_source="${build_name}_run.sh"
+    run_script_destination="gifr.sh"
     ffmpeg_executable_name="ffmpeg"
     ffprobe_executable_name="ffprobe"
   fi
 
-  if [ ! -x "${build_name}" ]; then
-    mkdir -m 0777 "${build_name}"
+  if [ -x "${build_path}" ]; then
+    rm -r "${build_path}"
   fi
+  mkdir -m 0777 "${build_path}"
 
-  cp "../target/gifr.jar" "${build_name}/gifr.jar"
-  cp "../LICENSE" "${build_name}/LICENSE-gifr"
-  cp "../scripts/LICENSE-ffmpeg" "${build_name}/LICENSE-ffmpeg"
-  cp "../scripts/application.yml" "${build_name}/application.yml"
-  cp "../scripts/${run_script_name}" "${build_name}/${run_script}"
-  chmod 0777 "${build_name}/${run_script}"
+  download_binary "${ffmpeg_license_url}" "./LICENSE-ffmpeg"
+
+  cp "../target/gifr.jar" "${build_path}/gifr.jar"
+  cp "../LICENSE" "${build_path}/LICENSE-gifr"
+  cp "./LICENSE-ffmpeg" "${build_path}/LICENSE-ffmpeg"
+  cp "../scripts/${run_script_source}" "${build_path}/${run_script_destination}"
+  chmod 0777 "${build_path}/${run_script_destination}"
 
   ffmpeg_path="ffmpeg_${build_name}"
+  archive_name="ffmpeg_${build_name}.tar.xz"
 
   case "${build_platform}" in
     "linux")
@@ -72,7 +77,6 @@ function release {
         ;;
       esac
 
-      archive_name="ffmpeg_${build_name}.tar.xz"
       download_binary "${download_url}" "${archive_name}"
       unpack_tar "${archive_name}" "${ffmpeg_path}"
     ;;
@@ -81,26 +85,28 @@ function release {
       mkdir "${ffmpeg_path}"
       cd "${ffmpeg_path}"
       download_binary "${macos_amd64_ffmpeg_url}" "ffmpeg.zip"
-      unzip "ffmpeg.zip"
+      unzip -u "ffmpeg.zip"
       download_binary "${macos_amd64_ffprobe_url}" "ffprobe.zip"
-      unzip "ffprobe.zip"
+      unzip -u "ffprobe.zip"
       cd ..
     ;;
 
     "windows")
-      download_url="${windows_amd64_package_url}"
-      archive_name="ffmpeg_${build_name}.tar.gz"
-      download_binary "${download_url}" "${archive_name}"
+      download_binary "${windows_amd64_package_url}" "${archive_name}"
       unpack_tar "${archive_name}" "${ffmpeg_path}"
       ffmpeg_path="${ffmpeg_path}/bin"
     ;;
   esac
 
-  cp "${ffmpeg_path}/${ffmpeg_executable_name}" "${build_name}/${ffmpeg_executable_name}"
-  cp "${ffmpeg_path}/${ffprobe_executable_name}" "${build_name}/${ffprobe_executable_name}"
-  chmod 0777 "${build_name}/${ffmpeg_executable_name}" "${build_name}/${ffprobe_executable_name}"
+  cp "${ffmpeg_path}/${ffmpeg_executable_name}" "${build_path}/${ffmpeg_executable_name}"
+  cp "${ffmpeg_path}/${ffprobe_executable_name}" "${build_path}/${ffprobe_executable_name}"
+  chmod 0777 "${build_path}/${ffmpeg_executable_name}" "${build_path}/${ffprobe_executable_name}"
 
-  tar -cvzf "${build_name}.tar.gz" "${build_name}"
+  if [ "${build_platform}" = "windows" ]; then
+    zip -r "${build_path}.zip" "${build_path}"
+  else
+    tar -cvzf "${build_path}.tar.gz" "${build_path}"
+  fi
 }
 
 ###############################################################################
@@ -117,7 +123,7 @@ if [ ! -e "release" ]; then
   mkdir -m 0777 "release"
 fi
 
-cd "release" || exit 1
+cd "release"
 
 release "linux" "amd64"
 release "linux" "arm64"
